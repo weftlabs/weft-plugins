@@ -1,0 +1,56 @@
+name: Claude plugin
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: claude-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash --noprofile --norc -euo pipefail {0}
+    working-directory: plugins/claude
+
+jobs:
+  plugin:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - name: Validate plugin
+        run: |
+          npx --yes @anthropic-ai/claude-code@2.1.238 plugin validate --strict .
+          jq empty .claude-plugin/plugin.json .claude-plugin/marketplace.json .mcp.json
+          test "$(sed -n '2p' skills/weft/SKILL.md)" = "name: weft"
+          test "$(sed -n '2p' skills/weft-setup/SKILL.md)" = "name: weft-setup"
+          test "$(sed -n '2p' commands/balance.md)" = "description: Check the Weft wallet balance and spending policy"
+          test "$(sed -n '2p' commands/find-api.md)" = "description: Find paid APIs and data endpoints for a task via Weft search"
+          test "$(sed -n '2p' commands/setup.md)" = "description: Connect the Weft plugin with an existing or temporary account"
+          test "$(jq -r '.mcpServers.weft.url' .mcp.json)" = "https://weft.network/mcp"
+          test "$(jq -r '.version' .claude-plugin/plugin.json)" = "$(jq -r '.plugins[0].version' .claude-plugin/marketplace.json)"
+          test -x scripts/bootstrap.sh
+          test -x scripts/mcp-headers.sh
+          test -x tests/plugin_test.sh
+          bash tests/plugin_test.sh
+      - name: Check root marketplace points at this plugin
+        working-directory: .
+        run: |
+          test "$(jq -r '.plugins[0].source' .claude-plugin/marketplace.json)" = "./plugins/claude"
+          test "$(jq -r '.plugins[0].version' .claude-plugin/marketplace.json)" = "$(jq -r '.version' plugins/claude/.claude-plugin/plugin.json)"
+      - name: Check skill drift against weftlabs/skills
+        run: |
+          ref=$(cat SKILLS_REF)
+          git clone https://github.com/weftlabs/skills "$RUNNER_TEMP/canonical-skills"
+          git -C "$RUNNER_TEMP/canonical-skills" -c advice.detachedHead=false checkout "$ref"
+          diff -r "$RUNNER_TEMP/canonical-skills/skills/weft" skills/weft
+          diff -r "$RUNNER_TEMP/canonical-skills/skills/weft-setup" skills/weft-setup
+      - name: Check Markdown links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: --no-progress --max-retries 3 README.md commands/*.md

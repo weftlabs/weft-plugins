@@ -1,0 +1,22 @@
+name: Setup one plugin package
+description: Install pinned Node, pnpm, and frozen dependencies for one plugins/<host> package.
+
+inputs:
+  plugin:
+    description: Folder name under plugins/
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - uses: pnpm/action-setup@v6
+      with:
+        version: 10.33.4
+    - uses: actions/setup-node@v7
+      with:
+        node-version: "24"
+        cache: pnpm
+        cache-dependency-path: plugins/${{ inputs.plugin }}/pnpm-lock.yaml
+    - shell: bash
+      working-directory: plugins/${{ inputs.plugin }}
+      run: pnpm install --frozen-lockfile

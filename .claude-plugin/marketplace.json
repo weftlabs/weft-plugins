@@ -1,0 +1,20 @@
+{
+  "name": "weft-labs",
+  "owner": {
+    "name": "Weft Labs",
+    "url": "https://weft.network"
+  },
+  "description": "Weft Labs plugins for Claude Code — search the agent web and pay any x402 endpoint",
+  "plugins": [
+    {
+      "name": "weft",
+      "source": "./plugins/claude",
+      "description": "Search the agent web and pay any x402 endpoint from your Weft wallet",
+      "version": "0.3.0",
+      "author": { "name": "Weft Labs", "url": "https://weft.network" },
+      "homepage": "https://weft.network/docs",
+      "keywords": ["weft", "x402", "mpp", "search", "paid-apis", "wallet"],
+      "category": "productivity"
+    }
+  ]
+}

@@ -7,7 +7,7 @@
     "url": "https://weft.network"
   },
   "homepage": "https://weft.network/docs",
-  "repository": "https://github.com/weftlabs/weft-claude-plugin",
+  "repository": "https://github.com/weftlabs/weft-plugins",
   "license": "MIT",
   "keywords": ["weft", "x402", "mpp", "search", "paid-apis", "wallet"]
 }

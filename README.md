@@ -8,7 +8,7 @@ Host plugins that connect an agent to Weft. One folder per host under
 |---|---|---|
 | Claude Code | [`plugins/claude`](plugins/claude) | `/plugin marketplace add weftlabs/weft-plugins` then `/plugin install weft@weft-labs` |
 | OpenCode | [`plugins/opencode`](plugins/opencode) | `opencode2 plugin add @weftlabs/opencode-websearch` |
-| OpenClaw | [`plugins/openclaw`](plugins/openclaw) | Stub. Do not ship yet. |
+| OpenClaw | [`plugins/openclaw`](plugins/openclaw) | See that folder README. First npm release is still pending. |
 
 Add a new host as `plugins/<host>/`. Do not open a new GitHub repository.
 

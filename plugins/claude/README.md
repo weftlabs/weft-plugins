@@ -29,10 +29,10 @@ From a marketplace (once listed in the Anthropic community marketplace):
 /plugin install weft@claude-plugins-community
 ```
 
-Or directly from this repo:
+Or directly from the host-plugins repository:
 
 ```
-/plugin marketplace add weftlabs/weft-claude-plugin
+/plugin marketplace add weftlabs/weft-plugins
 /plugin install weft@weft-labs
 ```
 

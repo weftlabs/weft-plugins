@@ -20,6 +20,8 @@ cd plugins/opencode && pnpm install --frozen-lockfile && pnpm run check
   `skills/weft` or `skills/weft-setup` mirrors. Bump `SKILLS_REF` and re-vendor.
 - Add a new host as `plugins/<host>/`. Do not create `weft-<host>-plugin`.
 - Nested `plugins/*/.github/workflows` do not run. Root workflows own CI.
+  OpenCode npm publish still lives in `weft-opencode-plugin` until that
+  workflow is moved.
 - This repo is not a `weft-dev` submodule. Checkout:
   `/Users/nittarab/git/work/weft-plugins`.
 - Keep temporary credentials out of tracked files.

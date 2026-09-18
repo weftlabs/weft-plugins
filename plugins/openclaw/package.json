@@ -54,7 +54,8 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/weftlabs/weft-openclaw-plugin.git"
+    "url": "https://github.com/weftlabs/weft-plugins.git",
+    "directory": "plugins/openclaw"
   },
   "publishConfig": {
     "access": "public"

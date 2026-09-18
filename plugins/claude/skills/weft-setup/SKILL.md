@@ -1,0 +1,168 @@
+---
+name: weft-setup
+description: Connect this agent's user to a Weft Account — a wallet for finding and paying for paid data, APIs, and real-world actions. Use when asked to set up, install, or connect Weft, when `weft_*` tools are missing, or when a task needs Weft and no credential exists. One-shot — after setup, the installed `weft` skill owns ongoing usage.
+---
+
+# Set up Weft
+
+Weft gives the user one account that agents can search and spend from,
+inside a spending policy. Setup means establishing that account connection
+from wherever you are running. Four MCP tools arrive with it:
+`weft_balance`, `weft_search`, `weft_fetch`, `weft_connection_status`.
+
+**Auth is OAuth in the browser on first use.** There is no API key to
+paste, and you must never ask the user for a password, API key, or token.
+
+## The one decision: credential scope
+
+| Credential | Scope | Survives |
+|---|---|---|
+| OAuth grant (plugin or MCP) | the user's account through one client credential store | sessions that retain that store |
+| CLI credential store | one machine | that machine only |
+
+Always establish the OAuth connection for the current client first. The grant
+authorizes access to the user's account, but the client still needs its own
+persisted token store. A new device or rebuilt sandbox must connect again when
+that store is absent. The CLI is an optional machine-local add-on, offered last
+and only where it can survive.
+
+## Step 1 — establish the account connection (always)
+
+Work down this list; take the first branch that applies to the surface you
+are running on. Do not ask the user to choose between mechanisms — the
+surface decides, and every branch ends in the same OAuth grant.
+
+1. **Claude Code**: install the Weft plugin — it bundles the MCP server
+   and this skill set.
+
+   ```
+   /plugin marketplace add weftlabs/weft-claude-plugin
+   /plugin install weft@weft-labs
+   /reload-plugins
+   ```
+
+   Run the reload immediately after installation, before checking tools or using
+   `/weft:setup`. If Claude Code warns that reload will invalidate the prompt
+   cache, run `/reload-plugins --force`; restarting Claude Code also activates
+   the plugin.
+
+   If the `weft_*` tools already respond, a connection exists — stop;
+   do not add a second manual MCP connection beside it. If the user has no account, use
+   `/weft:setup THEIR_EMAIL` (Step 2), never a manual connection.
+
+   The plugin pins the production server. If the URLs in this document
+   name any host other than `https://weft.network`, you are setting up a
+   different deployment: skip the plugin and use branch 2 with this
+   document's URLs.
+
+2. **Host with an MCP configuration you can edit** (Codex, Cursor, Cline,
+   opencode, OpenClaw, Hermes, VS Code, Copilot CLI, or any host speaking
+   streamable HTTP whose config you can write): add the hosted server `https://weft.network/mcp`. Exact per-host
+   config shapes are in [rules/hosts.md](rules/hosts.md) — copy the shape
+   for the detected host; never guess a config format for an unknown host. If the host manages
+   connections through a GUI instead of an editable config, use branch 3.
+
+3. **GUI host with a connectors UI** (Claude desktop, claude.ai, Cowork,
+   ChatGPT, other GUI clients): the human adds `https://weft.network/mcp`
+   as a custom connector in the host's Connectors/Apps settings. Walk the
+   human through it in plain words — typically Settings → Connectors →
+   Add custom connector, then paste the URL; that is all they need. If
+   the host's plan does not allow custom connectors, use branch 4.
+
+4. **None of the above**: send the human to
+   https://weft.network/dashboard/connect for manual instructions (it
+   needs an account — https://weft.network/signup first if they have
+   none). Stop rather than guessing.
+
+The first tool call opens a browser sign-in; that is expected. The grant
+appears under the user's Weft Connections and is revocable at any time.
+A fresh session in the same client stays connected only when its credential
+store persists. If that store is absent, connect the client again.
+
+## Step 2 — no account yet?
+
+OAuth signs in an account that already exists. If the user has none, ask
+for **their email address only** — never a password — and take the ONE
+path that matches how Step 1 connected. The temporary `wbt_` credential
+every path creates is a secret: never print, echo, log, or paste it into
+the conversation. After the human claims the account, the same credential
+gains balance and fetch access — treat it like money from the start.
+
+- **Plugin (branch 1):** run `/weft:setup THEIR_EMAIL`. The command
+  creates the bootstrap and stores the credential in the plugin's private
+  data without printing it. It needs Claude Code 2.1.195 or newer — on an
+  older version, update Claude Code or use branch 2. Do not add a manual
+  MCP connection beside the plugin, and do not use the shell flow below.
+- **Editable-config host (branch 2) with a persistent filesystem:** use
+  the CLI's bootstrap — it stores the
+  credential in a mode-0600 local file and never prints it. Read the email
+  through terminal input so user text is never inserted into shell syntax:
+
+  ```sh
+  (
+    set -eu
+    printf 'Email: ' >&2
+    IFS= read -r WEFT_EMAIL
+    npx --package @weftlabs/cli weft bootstrap --email "$WEFT_EMAIL" \
+      --agent-name "MCP setup agent" --reason "Connect this client to Weft"
+  )
+  ```
+
+  Then either continue on the CLI, or configure the MCP server per
+  branch 2 with OAuth after the claim.
+- **Host without the plugin or CLI, including branch 3 or 4:** there is no safe bootstrap
+  path here, even if your own sandbox has a shell — an ephemeral
+  filesystem loses the credential, and a static header can enter logs or
+  project configuration. Send the human to
+  https://weft.network/signup to create the account in the
+  browser, then connect with OAuth per Step 1. Do not improvise an HTTP
+  flow.
+
+A claim link goes to the email. Ask the human to verify and approve through
+that email. Weft applies the one-time signup grant after verification and
+promotes the same credential in place — search works while pending, and balance
+and fetch unlock after the claim. Then call `weft_balance`.
+`weft_connection_status` reports progress.
+
+## Step 3 — offer the CLI (only where it survives)
+
+Offer the machine-local CLI as an **add-on** — never instead of Step 1 —
+when all three hold:
+
+- you can execute shell commands,
+- Node.js is available,
+- the filesystem persists across sessions — **not** an ephemeral cloud
+  sandbox or container that is reclaimed after the task.
+
+```sh
+npm install -g @weftlabs/cli
+```
+
+One line to the user is enough: "Your account is connected. This machine
+can also run the Weft CLI for headless and scripted use — want it?" If any
+condition fails, skip this step silently; in an ephemeral environment a
+CLI credential would appear to work and then vanish with the container.
+
+## Verify
+
+1. Follow the host's reload step (restart, or start a new session — the
+   tools appear in the next session, not this one).
+2. Call `weft_balance` — or `weft_connection_status` if a claim is still
+   pending.
+3. Confirm the `weft` usage skill is discoverable — the plugin bundles
+   it; on any other surface install it from
+   https://weft.network/skills/weft/SKILL.md. It owns everything from
+   here: searching, spending rules, receipts. Do not duplicate its
+   content.
+
+If either check fails, report exactly what you changed and what the host
+said. Do not invent an API key or fall back to an unrelated config.
+
+## Hard rules
+
+- Never ask for, accept, generate, or store a password, `wk_` key, or
+  OAuth token. Never print a `wbt_` credential.
+- One connection per host — plugin OR manual MCP entry, never both.
+- `weft_balance` is the truth after the one-time signup grant. During onboarding,
+  ask the human to verify the claim email; do not ask for a wallet top-up or
+  promise any additional promotional balance.

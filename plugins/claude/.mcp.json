@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "weft": {
+      "type": "http",
+      "url": "https://weft.network/mcp",
+      "headersHelper": "sh \"${CLAUDE_PLUGIN_ROOT}/scripts/mcp-headers.sh\" \"${CLAUDE_PLUGIN_DATA}/temporary_api_key\""
+    }
+  }
+}

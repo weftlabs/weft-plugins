@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "weft": {
+      "type": "http",
+      "url": "https://weft.network/mcp"
+    }
+  }
+}

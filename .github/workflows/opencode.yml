@@ -79,6 +79,9 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Require all CI jobs
+        # This job has no checkout. Do not inherit plugins/opencode: that
+        # directory does not exist until actions/checkout runs.
+        working-directory: ${{ github.workspace }}
         env:
           NEEDS_JSON: ${{ toJson(needs) }}
         run: |

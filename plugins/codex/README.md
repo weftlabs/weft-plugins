@@ -1,14 +1,15 @@
 # Weft for ChatGPT and Codex
 
 Use Weft to find and buy paid data, APIs, and real-world actions. This plugin
-connects to the hosted Weft MCP server at `https://weft.network/mcp` and adds
-the canonical Weft usage and setup skills.
+connects through the registered Weft Labs ChatGPT app and adds the canonical
+Weft usage and setup skills.
 
 ## Included components
 
 - `weft`: search, compare, buy, and inspect receipts
 - `weft-setup`: connect a Weft Account and apply safe setup guidance
-- Weft MCP: balance, search, fetch, result, and connection-status tools
+- Weft MCP through the registered app: balance, search, fetch, result, and
+  connection-status tools
 - Weft Labs ChatGPT app: `asdk_app_6aad229bb3008191bcbc6ebd6e02d18e`
 
 The skill directories are byte-identical copies from
@@ -24,6 +25,11 @@ codex plugin add weft@weft-labs
 
 The public ChatGPT and Codex store listing is separate. Its submission is
 pending.
+
+The package does not include a direct `.mcp.json` declaration. ChatGPT marks
+imported plugins with direct MCP declarations as desktop-only, including when
+the MCP server uses remote HTTPS. The registered app keeps this plugin usable
+on supported ChatGPT browser, desktop, and mobile surfaces.
 
 ## Validate
 

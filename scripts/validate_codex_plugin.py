@@ -12,7 +12,6 @@ from urllib.parse import urlparse
 
 
 APP_ID = "asdk_app_6aad229bb3008191bcbc6ebd6e02d18e"
-MCP_URL = "https://weft.network/mcp"
 MARKETPLACE_NAME = "weft-labs"
 SEMVER = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$")
 SHA = re.compile(r"^[0-9a-f]{40}$")
@@ -171,7 +170,6 @@ def validate(root: Path, *, store: bool = False) -> list[str]:
     expected_paths = {
         "apps": "./.app.json",
         "skills": "./skills/",
-        "mcpServers": "./.mcp.json",
     }
     for key, expected in expected_paths.items():
         if manifest.get(key) != expected:
@@ -186,9 +184,8 @@ def validate(root: Path, *, store: bool = False) -> list[str]:
     app = load_object(root / ".app.json", errors)
     if app != {"apps": {"weft": {"id": APP_ID}}}:
         errors.append(".app.json must point to the registered Weft app")
-    mcp = load_object(root / ".mcp.json", errors)
-    if mcp != {"mcpServers": {"weft": {"type": "http", "url": MCP_URL}}}:
-        errors.append(".mcp.json must point to the hosted Weft MCP server")
+    if "mcpServers" in manifest or (root / ".mcp.json").exists():
+        errors.append("registered-app package must not declare a desktop-only MCP server")
 
     for relative in ("assets/icon.png", "assets/logo.png"):
         validate_png(require_file(root, relative, errors), errors)

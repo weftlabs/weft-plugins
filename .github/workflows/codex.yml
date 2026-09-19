@@ -24,10 +24,9 @@ jobs:
       - uses: actions/checkout@v7
       - name: Validate plugin
         run: python3 scripts/validate_codex_plugin.py plugins/codex
-      - name: Check registered app and MCP endpoint
+      - name: Check registered app
         run: |
           test "$(jq -r '.apps.weft.id' plugins/codex/.app.json)" = "asdk_app_6aad229bb3008191bcbc6ebd6e02d18e"
-          test "$(jq -r '.mcpServers.weft.url' plugins/codex/.mcp.json)" = "https://weft.network/mcp"
       - name: Check skill drift against weftlabs/skills
         run: |
           ref=$(cat plugins/codex/SKILLS_REF)

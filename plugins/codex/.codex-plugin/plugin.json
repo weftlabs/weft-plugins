@@ -18,7 +18,6 @@
   ],
   "apps": "./.app.json",
   "skills": "./skills/",
-  "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "Weft Labs",
     "shortDescription": "Buy APIs and data with Weft.",

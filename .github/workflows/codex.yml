@@ -29,11 +29,11 @@ jobs:
           test "$(jq -r '.apps.weft.id' plugins/codex/.app.json)" = "asdk_app_6aad229bb3008191bcbc6ebd6e02d18e"
       - name: Check skill drift against weftlabs/skills
         run: |
+          test ! -e plugins/codex/skills/weft-setup
           ref=$(cat plugins/codex/SKILLS_REF)
           git clone https://github.com/weftlabs/skills "$RUNNER_TEMP/canonical-skills"
           git -C "$RUNNER_TEMP/canonical-skills" -c advice.detachedHead=false checkout "$ref"
           diff -r "$RUNNER_TEMP/canonical-skills/skills/weft" plugins/codex/skills/weft
-          diff -r "$RUNNER_TEMP/canonical-skills/skills/weft-setup" plugins/codex/skills/weft-setup
       - name: Check Markdown links
         uses: lycheeverse/lychee-action@v2
         with:

@@ -2,19 +2,22 @@
 
 Use Weft to find and buy paid data, APIs, and real-world actions. This plugin
 connects through the registered Weft Labs ChatGPT app and adds the canonical
-Weft usage and setup skills.
+Weft usage skill.
 
 ## Included components
 
 - `weft`: search, compare, buy, and inspect receipts
-- `weft-setup`: connect a Weft Account and apply safe setup guidance
 - Weft MCP through the registered app: balance, search, fetch, result, and
   connection-status tools
 - Weft Labs ChatGPT app: `asdk_app_6aad229bb3008191bcbc6ebd6e02d18e`
 
-The skill directories are byte-identical copies from
+The usage skill is a byte-identical copy from
 [`weftlabs/skills`](https://github.com/weftlabs/skills) at the commit in
 `SKILLS_REF`.
+
+`weft-setup` is not installed as part of this plugin. It is a one-shot setup
+router in the canonical skills repository. The registered app handles the
+persistent Weft connection.
 
 ## Install
 

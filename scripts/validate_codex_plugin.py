@@ -189,8 +189,9 @@ def validate(root: Path, *, store: bool = False) -> list[str]:
 
     for relative in ("assets/icon.png", "assets/logo.png"):
         validate_png(require_file(root, relative, errors), errors)
-    for name in ("weft", "weft-setup"):
-        validate_skill(root, name, errors)
+    validate_skill(root, "weft", errors)
+    if (root / "skills/weft-setup").exists():
+        errors.append("plugin must not vendor the one-shot weft-setup skill")
 
     skills_ref = require_file(root, "SKILLS_REF", errors)
     if skills_ref.is_file() and not SHA.fullmatch(skills_ref.read_text(encoding="utf-8").strip()):

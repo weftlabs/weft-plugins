@@ -1,7 +1,7 @@
 # Weft plugins
 
 Host plugins that connect an agent to Weft. One folder per host under
-`plugins/`. Canonical usage and setup skills stay in
+`plugins/`. Canonical skills stay in
 [weftlabs/skills](https://github.com/weftlabs/skills).
 
 | Host | Path | Install |
@@ -20,7 +20,7 @@ The older repositories `weft-claude-plugin`, `weft-opencode-plugin`, and
 
 ```
 plugins/claude/     Claude Code plugin (marketplace + MCP + vendored skills)
-plugins/codex/      ChatGPT and Codex plugin (app + MCP + vendored skills)
+plugins/codex/      ChatGPT and Codex plugin (registered app + usage skill)
 plugins/opencode/   OpenCode V2 websearch npm package
 plugins/openclaw/   OpenClaw stub
 ```

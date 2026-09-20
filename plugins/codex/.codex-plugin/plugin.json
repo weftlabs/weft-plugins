@@ -1,0 +1,42 @@
+{
+  "name": "weft",
+  "version": "0.1.0",
+  "description": "Find and buy paid data, APIs, and real-world actions with your Weft wallet.",
+  "author": {
+    "name": "Weft Labs",
+    "url": "https://weft.network"
+  },
+  "homepage": "https://weft.network/docs",
+  "repository": "https://github.com/weftlabs/weft-plugins",
+  "license": "MIT",
+  "keywords": [
+    "weft",
+    "x402",
+    "mpp",
+    "paid-apis",
+    "wallet"
+  ],
+  "apps": "./.app.json",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Weft Labs",
+    "shortDescription": "Buy APIs and data with Weft.",
+    "longDescription": "Weft lets ChatGPT and Codex search for paid data and services, compare live prices, and buy the selected result within your wallet policy.",
+    "developerName": "Weft Labs",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://weft.network",
+    "brandColor": "#C66A4A",
+    "composerIcon": "./assets/icon.png",
+    "logo": "./assets/logo.png",
+    "defaultPrompt": [
+      "Find the best paid API for this task.",
+      "Enrich this company list with verified data.",
+      "Search for a service and show me its price."
+    ]
+  }
+}

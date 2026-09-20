@@ -1,0 +1,40 @@
+name: Codex and ChatGPT plugin
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: codex-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash --noprofile --norc -euo pipefail {0}
+
+jobs:
+  plugin:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - name: Validate plugin
+        run: python3 scripts/validate_codex_plugin.py plugins/codex
+      - name: Check registered app
+        run: |
+          test "$(jq -r '.apps.weft.id' plugins/codex/.app.json)" = "asdk_app_6aad229bb3008191bcbc6ebd6e02d18e"
+      - name: Check skill drift against weftlabs/skills
+        run: |
+          test ! -e plugins/codex/skills/weft-setup
+          ref=$(cat plugins/codex/SKILLS_REF)
+          git clone https://github.com/weftlabs/skills "$RUNNER_TEMP/canonical-skills"
+          git -C "$RUNNER_TEMP/canonical-skills" -c advice.detachedHead=false checkout "$ref"
+          diff -r "$RUNNER_TEMP/canonical-skills/skills/weft" plugins/codex/skills/weft
+      - name: Check Markdown links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: --no-progress --max-retries 3 plugins/codex/README.md

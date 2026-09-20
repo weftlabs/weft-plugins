@@ -17,7 +17,10 @@ The usage skill is a byte-identical copy from
 
 `weft-setup` is not installed as part of this plugin. It is a one-shot setup
 router in the canonical skills repository. The registered app handles the
-persistent Weft connection.
+persistent Weft connection. If the app tools are missing, the `weft` usage
+skill sends the agent to
+[`https://weft.network/setup.md`](https://weft.network/setup.md) to fetch and
+follow that router once, then discard it.
 
 ## Install
 

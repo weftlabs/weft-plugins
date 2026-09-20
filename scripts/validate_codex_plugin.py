@@ -13,6 +13,7 @@ from urllib.parse import urlparse
 
 APP_ID = "asdk_app_6aad229bb3008191bcbc6ebd6e02d18e"
 MARKETPLACE_NAME = "weft-labs"
+SETUP_SKILL_URL = "https://weft.network/setup.md"
 SEMVER = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$")
 SHA = re.compile(r"^[0-9a-f]{40}$")
 PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
@@ -192,6 +193,11 @@ def validate(root: Path, *, store: bool = False) -> list[str]:
     validate_skill(root, "weft", errors)
     if (root / "skills/weft-setup").exists():
         errors.append("plugin must not vendor the one-shot weft-setup skill")
+    usage_skill = root / "skills/weft/SKILL.md"
+    if usage_skill.is_file() and SETUP_SKILL_URL not in usage_skill.read_text(
+        encoding="utf-8"
+    ):
+        errors.append("weft usage skill must link to the one-shot setup router")
 
     skills_ref = require_file(root, "SKILLS_REF", errors)
     if skills_ref.is_file() and not SHA.fullmatch(skills_ref.read_text(encoding="utf-8").strip()):

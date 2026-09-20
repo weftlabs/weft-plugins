@@ -10,7 +10,8 @@ This folder owns the official Weft plugin for Codex and ChatGPT.
   Change the canonical skills repository first. Do not patch the vendored
   mirror.
 - `weft-setup` stays a one-shot router in the canonical skills repository. Do
-  not install or vendor it as persistent plugin content.
+  not install or vendor it as persistent plugin content. The `weft` usage
+  skill must retain its recovery link to `https://weft.network/setup.md`.
 - Run `python3 scripts/validate_codex_plugin.py plugins/codex` from the repository
   root before release.
 - Never store OAuth tokens, API keys, wallet secrets, or test credentials here.

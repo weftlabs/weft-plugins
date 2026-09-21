@@ -30,6 +30,9 @@
       "Write"
     ],
     "websiteURL": "https://weft.network",
+    "supportURL": "https://weftlabs.com/support",
+    "privacyPolicyURL": "https://weftlabs.com/privacy",
+    "termsOfServiceURL": "https://weftlabs.com/terms",
     "brandColor": "#C66A4A",
     "composerIcon": "./assets/icon.png",
     "logo": "./assets/logo.png",

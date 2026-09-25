@@ -22,8 +22,7 @@ cd plugins/opencode && pnpm install --frozen-lockfile && pnpm run check
 - Nested `plugins/*/.github/workflows` do not run. Root workflows own CI.
   OpenCode npm publish still lives in `weft-opencode-plugin` until that
   workflow is moved.
-- This repo is not a `weft-dev` submodule. Checkout:
-  `/Users/nittarab/git/work/weft-plugins`.
+- This repo is a `weft-dev` submodule at `weft-plugins/`.
 - Keep temporary credentials out of tracked files.
 
 ## PR Rules
@@ -35,5 +34,5 @@ cd plugins/opencode && pnpm install --frozen-lockfile && pnpm run check
 ## Where to Look Next
 
 - Install and layout: [README.md](README.md)
-- Cross-repo decision: `cto-os/decisions/2026-09-18-weft-plugins-monorepo.md`
-- Skills distribution: `cto-os/directives/agent-skills-distribution.md`
+- Cross-repo decision: `cto-os/decisions/2026-09-18-weft-plugins-monorepo.md` (this path exists only in the full workspace)
+- Skills distribution: `cto-os/directives/agent-skills-distribution.md` (this path exists only in the full workspace)

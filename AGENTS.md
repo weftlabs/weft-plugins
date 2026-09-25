@@ -34,5 +34,5 @@ cd plugins/opencode && pnpm install --frozen-lockfile && pnpm run check
 ## Where to Look Next
 
 - Install and layout: [README.md](README.md)
-- Cross-repo decision: `cto-os/decisions/2026-09-18-weft-plugins-monorepo.md` (this path exists only in the full workspace)
-- Skills distribution: `cto-os/directives/agent-skills-distribution.md` (this path exists only in the full workspace)
+- Cross-repo decision: [`../cto-os/decisions/2026-09-18-weft-plugins-monorepo.md`](../cto-os/decisions/2026-09-18-weft-plugins-monorepo.md). This path exists only in the full workspace.
+- Skills distribution: [`../cto-os/directives/agent-skills-distribution.md`](../cto-os/directives/agent-skills-distribution.md). This path exists only in the full workspace.

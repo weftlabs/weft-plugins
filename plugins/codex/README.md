@@ -45,15 +45,11 @@ From the repository root:
 python3 scripts/validate_codex_plugin.py plugins/codex
 ```
 
-The public-directory gate is stricter:
+The public-directory gate also validates the required listing URLs:
 
 ```sh
 python3 scripts/validate_codex_plugin.py --store plugins/codex
 ```
-
-That command intentionally fails until Weft publishes support, privacy-policy,
-and terms pages and adds all four listing URLs to the manifest. Do not replace
-those pages with placeholder legal text.
 
 ## Publish
 

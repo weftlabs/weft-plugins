@@ -12,6 +12,7 @@ capacity still apply.
 
 - OpenCode V2 beta `0.0.0-beta-18743`
 - Node.js 24 or later
+- Node.js 24.21.0 for source development (selected by `.mise.toml`)
 - A Weft account with a buyer API key and funded balance
 
 OpenCode V2 and its plugin API are beta software. This release pins the

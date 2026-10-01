@@ -33,7 +33,8 @@ OpenClaw prefixes MCP tools with their server name. The Weft tools appear as:
 ## Requirements
 
 - OpenClaw `2026.8.1` or later
-- Node.js 24.15 or later for the full native package
+- Node.js 24.15 or later, below 25, for the full native package
+- Node.js 24.21.0 for source development (selected by `.mise.toml`)
 - a Weft account; paid calls also need a funded wallet
 
 ## Install the complete OpenClaw plugin

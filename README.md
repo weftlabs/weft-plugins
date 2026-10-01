@@ -28,6 +28,8 @@ plugins/openclaw/   OpenClaw stub
 ## Development
 
 Work in the host folder. Root GitHub Actions run that folder's checks.
+OpenCode and OpenClaw development use Node.js 24.21.0 and pnpm 10.33.4.
+Run their commands with Mise to use each host folder's `.mise.toml`.
 
 ```sh
 # Claude plugin
@@ -38,8 +40,8 @@ python3 scripts/validate_codex_plugin.py plugins/codex
 
 # OpenCode plugin
 cd plugins/opencode
-pnpm install --frozen-lockfile
-pnpm run check
+mise exec -- pnpm install --frozen-lockfile
+mise exec -- pnpm run check
 ```
 
 Changes land through a pull request to `main`. Patrick owns the merge gate.

@@ -22,7 +22,7 @@ The older repositories `weft-claude-plugin`, `weft-opencode-plugin`, and
 plugins/claude/     Claude Code plugin (marketplace + MCP + vendored skills)
 plugins/codex/      ChatGPT and Codex plugin (registered app + usage skill)
 plugins/opencode/   OpenCode V2 websearch npm package
-plugins/openclaw/   OpenClaw stub
+plugins/openclaw/   OpenClaw plugin (install guide)
 ```
 
 ## Development

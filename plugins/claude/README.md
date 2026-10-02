@@ -38,7 +38,9 @@ Or directly from the host-plugins repository:
 
 ## First run
 
-This plugin is the explicit MCP setup path. It does not install the Weft CLI.
+Plugin installation and `/weft:setup` configure MCP, not the Weft CLI.
+The bundled setup skill can offer a separate CLI installation when a task
+needs shell commands. That optional step does not replace the MCP connection.
 
 Already have an account:
 

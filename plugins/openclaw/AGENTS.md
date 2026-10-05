@@ -28,7 +28,8 @@ mise exec -- pnpm run dogfood:docker
 - The generic path is skill plus hosted MCP. Do not copy the buyer runtime into
   native code.
 - `agent-plugin/skills/weft/` is a byte-identical mirror of
-  `weftlabs/skills` at `SKILLS_REF`. Never edit it directly.
+  `weftlabs/skills` at `SKILLS_REF`. `pnpm run bundle:check` compares the
+  full directory and rejects drift. Never edit the mirror directly.
 - Use OpenClaw's public plugin API. Do not patch OpenClaw core.
 - Requester identity uses only host-trusted fields and environment-variable
   names. Never store, log, or return credential values.

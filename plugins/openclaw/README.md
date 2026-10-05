@@ -178,7 +178,8 @@ mise exec -- pnpm check
 ```
 
 The `weft` skill is a byte-identical mirror of `weftlabs/skills` at the commit
-in `SKILLS_REF`. Change it only in the canonical skills repository, then bump
+in `SKILLS_REF`. `pnpm run bundle:check` compares the full directory and
+rejects drift. Change it only in the canonical skills repository, then bump
 the pin and re-vendor it here.
 
 ## Docker dogfood

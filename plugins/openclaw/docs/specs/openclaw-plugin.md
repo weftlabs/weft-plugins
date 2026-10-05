@@ -60,7 +60,9 @@ requester identity and web-search provider registration.
 - The native plugin declares the same skill root and MCP server without copying
   the generic Weft runtime.
 - The vendored skill is byte-identical to the canonical repository at the
-  pinned `SKILLS_REF`; CI rejects drift.
+  pinned `SKILLS_REF`. `pnpm run bundle:check` compares every file in
+  `agent-plugin/skills/weft` with `skills/weft` at that commit and rejects
+  any difference. Root CI runs that command.
 - A single-user install can use OpenClaw MCP OAuth without a plugin credential.
   Native and portable instructions save the local server and OAuth mode before
   login.

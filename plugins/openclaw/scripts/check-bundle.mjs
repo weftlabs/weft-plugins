@@ -1,4 +1,7 @@
 import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+
+import { assertSkillMirrorMatches, fetchCanonicalSkillDir } from "./skill-mirror.mjs";
 
 function readJson(path) {
   return JSON.parse(readFileSync(new URL(path, import.meta.url), "utf8"));
@@ -40,6 +43,13 @@ if (!skill.startsWith("---\nname: weft\n")) {
 if (!/^[0-9a-f]{40}$/.test(skillsRef)) {
   throw new Error("SKILLS_REF must pin one canonical weftlabs/skills commit");
 }
+const mirrorDir = fileURLToPath(new URL("../agent-plugin/skills/weft", import.meta.url));
+const canonical = fetchCanonicalSkillDir(skillsRef);
+try {
+  assertSkillMirrorMatches(canonical.skillDir, mirrorDir);
+} finally {
+  canonical.cleanup();
+}
 const oauthSetup = readme.indexOf('"auth":"oauth"');
 const oauthLogin = readme.indexOf("openclaw mcp login weft");
 if (
@@ -51,4 +61,6 @@ if (
   throw new Error("Portable bundle must configure OpenClaw OAuth before MCP login");
 }
 
-console.log(`Agent Plugins 1.0.0 bundle is valid and pins skill ${skillsRef.slice(0, 8)}.`);
+console.log(
+  `Agent Plugins 1.0.0 bundle is valid and matches canonical skill ${skillsRef.slice(0, 8)}.`,
+);

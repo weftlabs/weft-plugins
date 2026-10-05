@@ -1,5 +1,13 @@
 import { spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync } from "node:fs";
+import {
+  lstatSync,
+  mkdirSync,
+  mkdtempSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  statSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join, relative, sep } from "node:path";
 
@@ -27,6 +35,9 @@ function run(command, args, options = {}) {
 }
 
 export function listSkillFiles(dir) {
+  if (lstatSync(dir).isSymbolicLink()) {
+    throw new Error("Skill mirror root must not be a symlink");
+  }
   const files = [];
   function walk(current) {
     for (const entry of readdirSync(current, { withFileTypes: true })) {

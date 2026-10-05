@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -51,5 +51,55 @@ describe("canonical skill mirror", () => {
 
     writeFileSync(join(mirror, "rules/extra.md"), "not canonical\n");
     expect(() => assertSkillMirrorMatches(canonical, mirror)).toThrow(/extra\.md/);
+  });
+
+  test("rejects a missing mirror file", () => {
+    const canonical = makeTree("canonical-missing", {
+      "SKILL.md": "---\nname: weft\n",
+      "rules/cli.md": "install the cli\n",
+    });
+    const mirror = makeTree("mirror-missing", {
+      "SKILL.md": "---\nname: weft\n",
+    });
+
+    expect(() => assertSkillMirrorMatches(canonical, mirror)).toThrow(/Missing: rules\/cli\.md/);
+  });
+
+  test("compares binary file bytes", () => {
+    const canonical = makeTree("canonical-binary", { "SKILL.md": "same\n" });
+    const mirror = makeTree("mirror-binary", { "SKILL.md": "same\n" });
+    const same = Buffer.from([0x00, 0xff, 0x10, 0x80]);
+    writeFileSync(join(canonical, "payload.bin"), same);
+    writeFileSync(join(mirror, "payload.bin"), Buffer.from(same));
+
+    expect(() => assertSkillMirrorMatches(canonical, mirror)).not.toThrow();
+
+    writeFileSync(join(mirror, "payload.bin"), Buffer.from([0x00, 0xfe, 0x10, 0x80]));
+    expect(() => assertSkillMirrorMatches(canonical, mirror)).toThrow(/payload\.bin/);
+  });
+
+  test("rejects a symbolic link at either comparison root", () => {
+    const files = { "SKILL.md": "---\nname: weft\n" };
+    const canonical = makeTree("canonical-root-link", files);
+    const mirrorTarget = makeTree("mirror-root-target", files);
+    const mirrorParent = mkdtempSync(join(tmpdir(), "weft-skill-mirror-root-link-"));
+    roots.push(mirrorParent);
+    const mirror = join(mirrorParent, "weft");
+    symlinkSync(mirrorTarget, mirror);
+
+    expect(() => assertSkillMirrorMatches(canonical, mirror)).toThrow(
+      /Skill mirror root must not be a symlink/,
+    );
+
+    const canonicalTarget = makeTree("canonical-root-target", files);
+    const canonicalParent = mkdtempSync(join(tmpdir(), "weft-skill-mirror-canonical-link-"));
+    roots.push(canonicalParent);
+    const canonicalLink = join(canonicalParent, "weft");
+    symlinkSync(canonicalTarget, canonicalLink);
+    const realMirror = makeTree("mirror-real", files);
+
+    expect(() => assertSkillMirrorMatches(canonicalLink, realMirror)).toThrow(
+      /Skill mirror root must not be a symlink/,
+    );
   });
 });

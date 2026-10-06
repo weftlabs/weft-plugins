@@ -28,9 +28,10 @@ plugins/openclaw/   OpenClaw plugin (install guide)
 ## Development
 
 Use Git, Bash, Python and [Mise](https://mise.jdx.dev/getting-started.html).
-The [workspace tool configuration](https://github.com/weftlabs/weft-dev/blob/main/.mise.toml)
-selects Python for workspace checkouts. A standalone checkout needs Python
-available first; see [Mise's Python setup](https://mise.jdx.dev/lang/python.html).
+Workspace checkouts select Python through `weft-dev/.mise.toml`, available
+after cloning the private workspace with the required GitHub access.
+A standalone checkout needs Python available first; see
+[Mise's Python setup](https://mise.jdx.dev/lang/python.html).
 The Node/pnpm source versions belong to each host's
 [Mise](plugins/opencode/.mise.toml)
 [configuration](plugins/openclaw/.mise.toml), not a copied version list here.

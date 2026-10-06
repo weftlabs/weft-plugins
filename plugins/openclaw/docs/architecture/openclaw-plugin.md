@@ -23,7 +23,8 @@ The repository ships three layers. Each layer has one owner.
 `agent-plugin/` is a conforming Agent Plugins 1.0.0 bundle. It contains:
 
 - the canonical `weft` skill, vendored byte-identical from
-  `weftlabs/skills` at `SKILLS_REF`;
+  `weftlabs/skills` at `SKILLS_REF`. `bundle:check` compares that full
+  directory with the pinned commit and rejects drift;
 - one Streamable HTTP MCP connection to `https://weft.network/mcp`.
 
 The hosted MCP server owns account OAuth, the four generic Weft tools, wallet

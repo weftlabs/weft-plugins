@@ -23,8 +23,9 @@ paste, and you must never ask the user for a password, API key, or token.
 Always establish the OAuth connection for the current client first. The grant
 authorizes access to the user's account, but the client still needs its own
 persisted token store. A new device or rebuilt sandbox must connect again when
-that store is absent. The CLI is an optional machine-local add-on, offered last
-and only where it can survive.
+that store is absent. The CLI is a machine-local add-on. Install it when
+this session needs shell commands, as in Step 3; its local files need not
+survive the session.
 
 ## Step 1 — establish the account connection (always)
 
@@ -36,7 +37,7 @@ surface decides, and every branch ends in the same OAuth grant.
    and this skill set.
 
    ```
-   /plugin marketplace add weftlabs/weft-claude-plugin
+   /plugin marketplace add weftlabs/weft-plugins
    /plugin install weft@weft-labs
    /reload-plugins
    ```
@@ -93,8 +94,8 @@ gains balance and fetch access — treat it like money from the start.
   data without printing it. It needs Claude Code 2.1.195 or newer — on an
   older version, update Claude Code or use branch 2. Do not add a manual
   MCP connection beside the plugin, and do not use the shell flow below.
-- **Editable-config host (branch 2) with a persistent filesystem:** use
-  the CLI's bootstrap — it stores the
+- **Editable-config host (branch 2) with a persistent filesystem:** install
+  and verify the CLI as in Step 3, then use its bootstrap. It stores the
   credential in a mode-0600 local file and never prints it. Read the email
   through terminal input so user text is never inserted into shell syntax:
 
@@ -103,7 +104,7 @@ gains balance and fetch access — treat it like money from the start.
     set -eu
     printf 'Email: ' >&2
     IFS= read -r WEFT_EMAIL
-    npx --package @weftlabs/cli weft bootstrap --email "$WEFT_EMAIL" \
+    weft bootstrap --email "$WEFT_EMAIL" \
       --agent-name "MCP setup agent" --reason "Connect this client to Weft"
   )
   ```
@@ -124,31 +125,35 @@ promotes the same credential in place — search works while pending, and balanc
 and fetch unlock after the claim. Then call `weft_balance`.
 `weft_connection_status` reports progress.
 
-## Step 3 — offer the CLI (only where it survives)
+## Step 3 — CLI when this session needs a `weft` binary
 
-Offer the machine-local CLI as an **add-on** — never instead of Step 1 —
-when all three hold:
-
-- you can execute shell commands,
-- Node.js is available,
-- the filesystem persists across sessions — **not** an ephemeral cloud
-  sandbox or container that is reclaimed after the task.
+Never instead of Step 1. Install a real `weft` on PATH when the task needs
+shell search or pay **in this session** — even if the disk is ephemeral.
+Persist is optional. This-run success is not.
 
 ```sh
 npm install -g @weftlabs/cli
+command -v weft
+weft --help
 ```
 
-One line to the user is enough: "Your account is connected. This machine
-can also run the Weft CLI for headless and scripted use — want it?" If any
-condition fails, skip this step silently; in an ephemeral environment a
-CLI credential would appear to work and then vanish with the container.
+If global install is refused, install into a session directory and put that
+`bin` on PATH. Verify with `command -v weft` and `weft --help`. Do not use
+`npx` as a substitute for installation.
+
+If this session only needs MCP tools and will not run CLI commands, you may
+skip CLI on an ephemeral host. Do not skip CLI when the rubric or the user
+asked for `weft --help`, `weft me`, `weft search`, or `weft fetch`.
 
 ## Verify
 
 1. Follow the host's reload step (restart, or start a new session — the
    tools appear in the next session, not this one).
 2. Call `weft_balance` — or `weft_connection_status` if a claim is still
-   pending.
+   pending. When balance returns, show the human the three policy numbers
+   (`policy.max_tx_usd`, `policy.daily_limit_usd`, `policy.weekly_limit_usd`)
+   and https://weft.network/dashboard/policy. Do not wait for an extra yes.
+   The wallet already enforces these caps; the human can change them there.
 3. Confirm the `weft` usage skill is discoverable — the plugin bundles
    it; on any other surface install it from
    https://weft.network/skills/weft/SKILL.md. It owns everything from

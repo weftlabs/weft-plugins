@@ -3,8 +3,9 @@ description: Connect the Weft plugin with an existing or temporary account
 argument-hint: email address, or "oauth"
 ---
 
-Set up this plugin's bundled Weft MCP connection. Installing this plugin is an
-explicit MCP choice: do not install or switch to the Weft CLI.
+Set up this plugin's bundled Weft MCP connection. This command does not
+install the CLI or replace MCP with it. If a later task needs shell commands,
+the `weft-setup` skill owns that separate, optional CLI installation.
 
 If `$ARGUMENTS` is `oauth`, confirm that the user already has a Weft account,
 then run:

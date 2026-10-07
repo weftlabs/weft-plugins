@@ -129,9 +129,13 @@ artifact context. Inspect Weft purchase history before you retry it.
 
 ## Development
 
+Follow the [repository source setup](../../README.md#development) first,
+including Mise shell activation and this package's tool installation. From
+this package directory in that activated interactive shell:
+
 ```sh
-mise exec -- pnpm install --frozen-lockfile
-mise exec -- pnpm check
+pnpm install --frozen-lockfile
+pnpm check
 ```
 
 Tests use local fixtures. They do not make paid calls.

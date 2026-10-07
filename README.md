@@ -28,6 +28,9 @@ plugins/openclaw/   OpenClaw plugin (install guide)
 ## Development
 
 Use Git, Bash, Python and [Mise](https://mise.jdx.dev/getting-started.html).
+[Activate Mise in your interactive shell](https://mise.jdx.dev/getting-started.html#activate-mise)
+once. Run the blocks separately; after each tool installation, wait for the
+next shell prompt before running the dependency/build block.
 Workspace checkouts select Python through `weft-dev/.mise.toml`, available
 after cloning the private workspace with the required GitHub access.
 A standalone checkout needs Python available first; see
@@ -46,8 +49,8 @@ verification.
 From the repository root, verify the Claude and ChatGPT/Codex source contracts:
 
 ```sh
-mise exec -- bash plugins/claude/tests/plugin_test.sh
-mise exec -- python3 scripts/validate_codex_plugin.py plugins/codex
+bash plugins/claude/tests/plugin_test.sh
+python3 scripts/validate_codex_plugin.py plugins/codex
 ```
 
 These use temporary local fixtures/static files, not a live account bootstrap.
@@ -58,9 +61,17 @@ reviewing its tool configuration:
 (
   cd plugins/opencode &&
   mise trust &&
-  mise install &&
-  mise exec -- pnpm install --frozen-lockfile &&
-  mise exec -- pnpm run check
+  mise install
+)
+```
+
+After the next prompt, run:
+
+```sh
+(
+  cd plugins/opencode &&
+  pnpm install --frozen-lockfile &&
+  pnpm run check
 )
 ```
 
@@ -70,10 +81,18 @@ For OpenClaw's source build and unit tests:
 (
   cd plugins/openclaw &&
   mise trust &&
-  mise install &&
-  mise exec -- pnpm install --frozen-lockfile &&
-  mise exec -- pnpm run build &&
-  mise exec -- pnpm run test:unit
+  mise install
+)
+```
+
+After the next prompt, run:
+
+```sh
+(
+  cd plugins/openclaw &&
+  pnpm install --frozen-lockfile &&
+  pnpm run build &&
+  pnpm run test:unit
 )
 ```
 

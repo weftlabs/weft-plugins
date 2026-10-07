@@ -172,9 +172,13 @@ ceiling and never retries an uncertain outcome.
 
 ## Development
 
+Follow the [repository source setup](../../README.md#development) first,
+including Mise shell activation and this package's tool installation. From
+this package directory in that activated interactive shell:
+
 ```sh
-mise exec -- pnpm install --frozen-lockfile
-mise exec -- pnpm check
+pnpm install --frozen-lockfile
+pnpm check
 ```
 
 The `weft` skill is a byte-identical mirror of `weftlabs/skills` at the commit
@@ -190,7 +194,7 @@ web-search adapter with a strict `$0.01` ceiling:
 
 ```sh
 WEFT_API_KEY="a short-lived staging buyer key" \
-  mise exec -- pnpm run dogfood:docker
+  pnpm run dogfood:docker
 ```
 
 The container root filesystem is read-only. OpenClaw state, MCP credentials,

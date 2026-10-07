@@ -34,7 +34,7 @@ OpenClaw prefixes MCP tools with their server name. The Weft tools appear as:
 
 - OpenClaw `2026.8.1` or later
 - Node.js 24.15 or later, below 25, for the full native package
-- Node.js 24.21.0 for source development (selected by `.mise.toml`)
+- Source development tools selected by [`.mise.toml`](.mise.toml); see the [source setup/checks](../../README.md#development) (no buyer key required)
 - a Weft account; paid calls also need a funded wallet
 
 ## Install the complete OpenClaw plugin
@@ -172,9 +172,13 @@ ceiling and never retries an uncertain outcome.
 
 ## Development
 
+Follow the [repository source setup](../../README.md#development) first,
+including Mise shell activation and this package's tool installation. From
+this package directory in that activated interactive shell:
+
 ```sh
-mise exec -- pnpm install --frozen-lockfile
-mise exec -- pnpm check
+pnpm install --frozen-lockfile
+pnpm check
 ```
 
 The `weft` skill is a byte-identical mirror of `weftlabs/skills` at the commit
@@ -190,7 +194,7 @@ web-search adapter with a strict `$0.01` ceiling:
 
 ```sh
 WEFT_API_KEY="a short-lived staging buyer key" \
-  mise exec -- pnpm run dogfood:docker
+  pnpm run dogfood:docker
 ```
 
 The container root filesystem is read-only. OpenClaw state, MCP credentials,

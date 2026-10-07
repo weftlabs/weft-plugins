@@ -12,7 +12,7 @@ capacity still apply.
 
 - OpenCode V2 beta `0.0.0-beta-18743`
 - Node.js 24 or later
-- Node.js 24.21.0 for source development (selected by `.mise.toml`)
+- Source development tools selected by [`.mise.toml`](.mise.toml); see the [source setup/checks](../../README.md#development) (no buyer key required)
 - A Weft account with a buyer API key and funded balance
 
 OpenCode V2 and its plugin API are beta software. This release pins the
@@ -129,9 +129,13 @@ artifact context. Inspect Weft purchase history before you retry it.
 
 ## Development
 
+Follow the [repository source setup](../../README.md#development) first,
+including Mise shell activation and this package's tool installation. From
+this package directory in that activated interactive shell:
+
 ```sh
-mise exec -- pnpm install --frozen-lockfile
-mise exec -- pnpm check
+pnpm install --frozen-lockfile
+pnpm check
 ```
 
 Tests use local fixtures. They do not make paid calls.

@@ -9,7 +9,7 @@ websearch operation, buys it through Weft, and returns native OpenCode results.
 
 - TypeScript, ESM, Node 24
 - pnpm 10
-- Vitest, Biome, tsup
+- Vitest, oxlint, oxfmt, tsup
 - `@weftlabs/sdk` buyer client
 - OpenCode V2 promise plugin contract
 

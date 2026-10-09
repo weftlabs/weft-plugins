@@ -13,7 +13,7 @@ web-search adapter.
 - TypeScript ESM, Node 24, pnpm 10
 - OpenClaw native plugin SDK `2026.8.1`
 - `@weft-labs/sdk` only for the optional web-search adapter
-- Vitest, Biome, tsup
+- Vitest, oxlint, oxfmt, tsup
 
 ## Commands
 

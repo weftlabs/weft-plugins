@@ -16,12 +16,12 @@ provider through Weft.
 
 ## What installs
 
-| Layer | Default | Purpose |
-| --- | --- | --- |
-| Canonical `weft` skill | Yes | Teaches the agent service selection, payment, receipt, and safety loop. |
-| Hosted Weft MCP | Yes | Supplies generic discovery, wallet, execution, and connection tools. |
+| Layer                       | Default         | Purpose                                                                 |
+| --------------------------- | --------------- | ----------------------------------------------------------------------- |
+| Canonical `weft` skill      | Yes             | Teaches the agent service selection, payment, receipt, and safety loop. |
+| Hosted Weft MCP             | Yes             | Supplies generic discovery, wallet, execution, and connection tools.    |
 | Requester identity resolver | When configured | Gives different trusted OpenClaw requesters different Weft credentials. |
-| Native web-search adapter | When selected | Routes OpenClaw `web_search` through one Weft-bought search operation. |
+| Native web-search adapter   | When selected   | Routes OpenClaw `web_search` through one Weft-bought search operation.  |
 
 OpenClaw prefixes MCP tools with their server name. The Weft tools appear as:
 

@@ -78,7 +78,8 @@ execFileSync(
     JSON.stringify({
       url: `${baseUrl}/mcp`,
       transport: "streamable-http",
-      headers: { Authorization: "Bearer $" + "{WEFT_API_KEY}" },
+      // Double quotes on purpose. OpenClaw expands ${WEFT_API_KEY}; JavaScript must not.
+      headers: { Authorization: "Bearer ${WEFT_API_KEY}" },
       toolFilter: { include: MCP_TOOLS },
       connectionTimeoutMs: 10_000,
       requestTimeoutMs: 30_000,
@@ -108,7 +109,7 @@ function collectToolNames(value, output = new Set()) {
   return output;
 }
 
-const probedTools = [...collectToolNames(probe)].sort();
+const probedTools = [...collectToolNames(probe)].toSorted();
 const missingTools = MCP_TOOLS.filter(
   (required) => !probedTools.some((name) => name === required || name.endsWith(`__${required}`)),
 );

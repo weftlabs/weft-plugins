@@ -56,7 +56,7 @@ export function listSkillFiles(dir) {
     }
   }
   walk(dir);
-  return files.sort();
+  return files.toSorted();
 }
 
 export function assertSkillMirrorMatches(canonicalDir, mirrorDir) {

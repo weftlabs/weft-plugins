@@ -13,9 +13,11 @@ describe("search runtime", () => {
     const selected = operation("you-com", "0.005", {
       request: { method: "GET", url: "https://api.you.com/v1/search", query: { query: "query" } },
     });
-    const balance = vi.fn().mockResolvedValue({ wallet: { totalUsd: "1.00" } });
-    const search = vi.fn().mockResolvedValue({ results: [selected] });
-    const fetch = vi.fn().mockResolvedValue({
+    const balance = vi
+      .fn<(...args: any[]) => any>()
+      .mockResolvedValue({ wallet: { totalUsd: "1.00" } });
+    const search = vi.fn<(...args: any[]) => any>().mockResolvedValue({ results: [selected] });
+    const fetch = vi.fn<(...args: any[]) => any>().mockResolvedValue({
       bodyBase64: Buffer.from(
         JSON.stringify({ results: { web: [{ url: "https://result.example", title: "Result" }] } }),
       ).toString("base64"),
@@ -40,11 +42,15 @@ describe("search runtime", () => {
   });
 
   test("does not retry an ambiguous paid failure", async () => {
-    const fetch = vi.fn().mockRejectedValue(new Error("request outcome is uncertain"));
+    const fetch = vi
+      .fn<(...args: any[]) => any>()
+      .mockRejectedValue(new Error("request outcome is uncertain"));
     const execute = createSearchExecutor(
       {
-        balance: vi.fn().mockResolvedValue({}),
-        search: vi.fn().mockResolvedValue({ results: [operation("you-com", "0.005")] }),
+        balance: vi.fn<(...args: any[]) => any>().mockResolvedValue({}),
+        search: vi
+          .fn<(...args: any[]) => any>()
+          .mockResolvedValue({ results: [operation("you-com", "0.005")] }),
         fetch,
       },
       config(),
@@ -57,9 +63,13 @@ describe("search runtime", () => {
   });
 
   test("stops before network work without a key or spend headroom", async () => {
-    const balance = vi.fn();
+    const balance = vi.fn<(...args: any[]) => any>();
     const execute = createSearchExecutor(
-      { balance, search: vi.fn(), fetch: vi.fn() },
+      {
+        balance,
+        search: vi.fn<(...args: any[]) => any>(),
+        fetch: vi.fn<(...args: any[]) => any>(),
+      },
       { provider: "auto", maxCostUsd: "0.01" },
     );
 
@@ -82,9 +92,13 @@ describe("search runtime", () => {
   test("refuses provider responses above two megabytes", async () => {
     const execute = createSearchExecutor(
       {
-        balance: vi.fn().mockResolvedValue({}),
-        search: vi.fn().mockResolvedValue({ results: [operation("you-com", "0.005")] }),
-        fetch: vi.fn().mockResolvedValue({ bodyBase64: "A".repeat(2_800_001) }),
+        balance: vi.fn<(...args: any[]) => any>().mockResolvedValue({}),
+        search: vi
+          .fn<(...args: any[]) => any>()
+          .mockResolvedValue({ results: [operation("you-com", "0.005")] }),
+        fetch: vi
+          .fn<(...args: any[]) => any>()
+          .mockResolvedValue({ bodyBase64: "A".repeat(2_800_001) }),
       },
       config(),
     );

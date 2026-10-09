@@ -26,14 +26,14 @@ if (plugin.name !== "weft" || plugin.version !== packageJson.version) {
 if (mcp.$schema !== "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json") {
   throw new Error("Agent Plugin MCP config must target the 1.0.0 schema");
 }
-if (Object.keys(mcp).sort().join(",") !== "$schema,mcpServers") {
+if (Object.keys(mcp).toSorted().join(",") !== "$schema,mcpServers") {
   throw new Error("Agent Plugin mcp.json must contain only $schema and mcpServers");
 }
 const server = mcp.mcpServers?.weft;
 if (
   server?.type !== "streamable-http" ||
   server?.url !== "https://weft.network/mcp" ||
-  Object.keys(server).sort().join(",") !== "type,url"
+  Object.keys(server).toSorted().join(",") !== "type,url"
 ) {
   throw new Error("Agent Plugin must declare only the canonical hosted Weft MCP transport");
 }

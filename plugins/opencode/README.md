@@ -51,17 +51,17 @@ Add the plugin:
       "options": {
         "provider": "auto",
         "maxCostUsd": "0.01",
-        "default": true
-      }
-    }
+        "default": true,
+      },
+    },
   ],
   "permissions": [
     {
       "action": "websearch",
       "resource": "*",
-      "effect": "allow"
-    }
-  ]
+      "effect": "allow",
+    },
+  ],
 }
 ```
 
@@ -82,13 +82,13 @@ See the official OpenCode V2 guides for
 
 `provider` can be one of these values:
 
-| Value | Behavior |
-| --- | --- |
-| `auto` | Select the lowest indexed price within the configured ceiling. |
-| `youcom` | Use only the reviewed You.com search operation. |
-| `exa` | Use only the reviewed Exa search operation. |
-| `parallel` | Use only the reviewed Parallel search operation. |
-| `tavily` | Use only the reviewed Tavily search operation. |
+| Value      | Behavior                                                       |
+| ---------- | -------------------------------------------------------------- |
+| `auto`     | Select the lowest indexed price within the configured ceiling. |
+| `youcom`   | Use only the reviewed You.com search operation.                |
+| `exa`      | Use only the reviewed Exa search operation.                    |
+| `parallel` | Use only the reviewed Parallel search operation.               |
+| `tavily`   | Use only the reviewed Tavily search operation.                 |
 
 Equal prices use Weft catalog relevance order. Fixed mode does not silently
 change provider.
@@ -97,12 +97,12 @@ change provider.
 
 Plugin options take precedence over the equivalent environment variables.
 
-| Plugin option | Environment variable | Default |
-| --- | --- | --- |
-| `provider` | `WEFT_WEBSEARCH_PROVIDER` | `auto` |
-| `maxCostUsd` | `WEFT_WEBSEARCH_MAX_COST_USD` | `0.01` |
-| `baseUrl` | `WEFT_BASE_URL` | `https://weft.network` |
-| `default` | None | `true` |
+| Plugin option | Environment variable          | Default                |
+| ------------- | ----------------------------- | ---------------------- |
+| `provider`    | `WEFT_WEBSEARCH_PROVIDER`     | `auto`                 |
+| `maxCostUsd`  | `WEFT_WEBSEARCH_MAX_COST_USD` | `0.01`                 |
+| `baseUrl`     | `WEFT_BASE_URL`               | `https://weft.network` |
+| `default`     | None                          | `true`                 |
 
 `maxCostUsd` is a hard limit for one search. The live provider payment
 challenge is authoritative. Weft refuses a request when its price exceeds this

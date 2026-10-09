@@ -3,22 +3,22 @@ import { describe, expect, test, vi } from "vitest";
 import plugin from "../src/index.js";
 
 function pluginContext(options: Record<string, unknown> = {}) {
-  const add = vi.fn();
-  const setDefault = vi.fn();
-  const websearchTransform = vi.fn(
+  const add = vi.fn<(...args: any[]) => any>();
+  const setDefault = vi.fn<(...args: any[]) => any>();
+  const websearchTransform = vi.fn<(...args: any[]) => any>(
     async (callback: (draft: { add: typeof add; default: { set: typeof setDefault } }) => void) => {
       callback({ add, default: { set: setDefault } });
     },
   );
-  const integrationUpdate = vi.fn(
+  const integrationUpdate = vi.fn<(...args: any[]) => any>(
     (id: string, callback: (integration: { id: string; name: string }) => void) => {
       const integration = { id, name: id };
       callback(integration);
       return integration;
     },
   );
-  const methodUpdate = vi.fn();
-  const integrationTransform = vi.fn(
+  const methodUpdate = vi.fn<(...args: any[]) => any>();
+  const integrationTransform = vi.fn<(...args: any[]) => any>(
     async (
       callback: (draft: {
         update: typeof integrationUpdate;

@@ -8,7 +8,10 @@ const manifest = JSON.parse(readFileSync(new URL("../package.json", import.meta.
 const workspace = readFileSync(new URL("../pnpm-workspace.yaml", import.meta.url), "utf8");
 const entrypoint = readFileSync(new URL("../index.ts", import.meta.url), "utf8");
 const pluginSource = readFileSync(new URL("../src/index.ts", import.meta.url), "utf8");
-const biomeConfig = JSON.parse(readFileSync(new URL("../biome.json", import.meta.url), "utf8"));
+const oxlintConfig = JSON.parse(
+  readFileSync(new URL("../.oxlintrc.json", import.meta.url), "utf8"),
+);
+const oxfmtConfig = JSON.parse(readFileSync(new URL("../.oxfmtrc.json", import.meta.url), "utf8"));
 const ciWorkflow = readFileSync(new URL("../.github/workflows/ci.yml", import.meta.url), "utf8");
 const releaseWorkflow = readFileSync(
   new URL("../.github/workflows/release.yml", import.meta.url),
@@ -43,10 +46,12 @@ describe("package installation contract", () => {
     expect(workspace).toContain('"@opencode-ai/schema@0.0.0-beta-18743"');
   });
 
-  test("keeps the Biome configuration schema aligned with the CLI", () => {
-    const version = manifest.devDependencies["@biomejs/biome"];
-
-    expect(biomeConfig.$schema).toBe(`https://biomejs.dev/schemas/${version}/schema.json`);
+  test("keeps oxlint and oxfmt config files and script names", () => {
+    expect(oxlintConfig.$schema).toBe("./node_modules/oxlint/configuration_schema.json");
+    expect(oxfmtConfig.$schema).toBe("./node_modules/oxfmt/configuration_schema.json");
+    expect(manifest.scripts.lint).toBe("oxlint");
+    expect(manifest.scripts.format).toBe("oxfmt");
+    expect(manifest.scripts["format:check"]).toBe("oxfmt --check");
   });
 
   test("promotes the exact main CI package through npm trusted publishing", () => {

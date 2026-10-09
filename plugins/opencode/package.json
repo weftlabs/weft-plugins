@@ -16,9 +16,9 @@
   "scripts": {
     "build": "tsup src/index.ts --format esm --dts --clean",
     "check": "pnpm run format:check && pnpm run lint && pnpm run typecheck && pnpm run test && pnpm run build",
-    "format": "biome format --write .",
-    "format:check": "biome format .",
-    "lint": "biome lint .",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
+    "lint": "oxlint",
     "test": "vitest run",
     "test:unit": "vitest run",
     "typecheck": "tsc --noEmit"
@@ -28,8 +28,9 @@
     "@weftlabs/sdk": "0.25.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.11",
     "@types/node": "^24.13.6",
+    "oxfmt": "0.72.0",
+    "oxlint": "1.87.0",
     "tsup": "^8.5.1",
     "typescript": "^6.0.3",
     "vitest": "^4.1.11"

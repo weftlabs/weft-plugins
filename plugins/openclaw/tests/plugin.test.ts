@@ -4,8 +4,8 @@ import plugin from "../src/index.js";
 
 describe("OpenClaw plugin", () => {
   test("registers the optional web-search provider without a shared identity resolver", () => {
-    const registerWebSearchProvider = vi.fn();
-    const registerMcpServerConnectionResolver = vi.fn();
+    const registerWebSearchProvider = vi.fn<(...args: any[]) => any>();
+    const registerMcpServerConnectionResolver = vi.fn<(...args: any[]) => any>();
 
     plugin.register({ registerWebSearchProvider, registerMcpServerConnectionResolver } as never);
 
@@ -22,8 +22,8 @@ describe("OpenClaw plugin", () => {
   });
 
   test("registers requester-scoped MCP identity only when bindings exist", () => {
-    const registerWebSearchProvider = vi.fn();
-    const registerMcpServerConnectionResolver = vi.fn();
+    const registerWebSearchProvider = vi.fn<(...args: any[]) => any>();
+    const registerMcpServerConnectionResolver = vi.fn<(...args: any[]) => any>();
 
     plugin.register({
       pluginConfig: {
@@ -49,10 +49,10 @@ describe("OpenClaw plugin", () => {
   });
 
   test("reads and writes the credential in the provider scope", () => {
-    const registerWebSearchProvider = vi.fn();
+    const registerWebSearchProvider = vi.fn<(...args: any[]) => any>();
     plugin.register({
       registerWebSearchProvider,
-      registerMcpServerConnectionResolver: vi.fn(),
+      registerMcpServerConnectionResolver: vi.fn<(...args: any[]) => any>(),
     } as never);
     const provider = registerWebSearchProvider.mock.calls[0]?.[0];
     const searchConfig: Record<string, unknown> = {};

@@ -78,8 +78,8 @@ execFileSync(
     JSON.stringify({
       url: `${baseUrl}/mcp`,
       transport: "streamable-http",
-      // Double quotes on purpose. OpenClaw expands ${WEFT_API_KEY}; JavaScript must not.
-      headers: { Authorization: "Bearer ${WEFT_API_KEY}" },
+      // oxlint-disable-next-line no-useless-concat -- OpenClaw expands ${WEFT_API_KEY}; do not join this external token.
+      headers: { Authorization: "Bearer $" + "{WEFT_API_KEY}" },
       toolFilter: { include: MCP_TOOLS },
       connectionTimeoutMs: 10_000,
       requestTimeoutMs: 30_000,

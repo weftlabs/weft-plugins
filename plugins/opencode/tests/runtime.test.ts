@@ -8,9 +8,9 @@ describe("search runtime", () => {
     const selected = operation("you-com", "0.005", {
       request: { method: "GET", url: "https://api.you.com/v1/search", query: { query: "query" } },
     });
-    const balance = vi.fn<(...args: any[]) => any>().mockResolvedValue({ balanceUsd: "1.00" });
-    const search = vi.fn<(...args: any[]) => any>().mockResolvedValue({ results: [selected] });
-    const fetch = vi.fn<(...args: any[]) => any>().mockResolvedValue({
+    const balance = vi.fn().mockResolvedValue({ balanceUsd: "1.00" });
+    const search = vi.fn().mockResolvedValue({ results: [selected] });
+    const fetch = vi.fn().mockResolvedValue({
       status: 200,
       bodyBase64: Buffer.from(
         JSON.stringify({ results: { web: [{ url: "https://result.example", title: "Result" }] } }),
@@ -50,9 +50,9 @@ describe("search runtime", () => {
     const selected = operation("you-com", "0.005", {
       request: { method: "GET", url: "https://api.you.com/v1/search", query: { query: "query" } },
     });
-    const balance = vi.fn<(...args: any[]) => any>().mockResolvedValue({});
-    const search = vi.fn<(...args: any[]) => any>().mockResolvedValue({ results: [selected] });
-    const fetch = vi.fn<(...args: any[]) => any>().mockResolvedValue({
+    const balance = vi.fn().mockResolvedValue({});
+    const search = vi.fn().mockResolvedValue({ results: [selected] });
+    const fetch = vi.fn().mockResolvedValue({
       status: 200,
       bodyBase64: Buffer.from('{"results":{"web":[{"url":"https://result.example"}]}}').toString(
         "base64",
@@ -75,15 +75,11 @@ describe("search runtime", () => {
   });
 
   test("does not retry an ambiguous paid failure", async () => {
-    const fetch = vi
-      .fn<(...args: any[]) => any>()
-      .mockRejectedValue(new Error("request outcome is uncertain"));
+    const fetch = vi.fn().mockRejectedValue(new Error("request outcome is uncertain"));
     const execute = createSearchExecutor(
       {
-        balance: vi.fn<(...args: any[]) => any>().mockResolvedValue({}),
-        search: vi
-          .fn<(...args: any[]) => any>()
-          .mockResolvedValue({ results: [operation("you-com", "0.005")] }),
+        balance: vi.fn().mockResolvedValue({}),
+        search: vi.fn().mockResolvedValue({ results: [operation("you-com", "0.005")] }),
         fetch,
       },
       { provider: "auto", maxCostUsd: "0.01" },
@@ -96,7 +92,7 @@ describe("search runtime", () => {
   });
 
   test("reports an upstream failure with safe purchase context and does not retry", async () => {
-    const fetch = vi.fn<(...args: any[]) => any>().mockResolvedValue({
+    const fetch = vi.fn().mockResolvedValue({
       status: 429,
       bodyBase64: Buffer.from('{"error":"rate limited"}').toString("base64"),
       paidUsd: "0.007",
@@ -106,10 +102,8 @@ describe("search runtime", () => {
     });
     const execute = createSearchExecutor(
       {
-        balance: vi.fn<(...args: any[]) => any>().mockResolvedValue({}),
-        search: vi
-          .fn<(...args: any[]) => any>()
-          .mockResolvedValue({ results: [operation("exa", "0.007")] }),
+        balance: vi.fn().mockResolvedValue({}),
+        search: vi.fn().mockResolvedValue({ results: [operation("exa", "0.007")] }),
         fetch,
       },
       { provider: "exa", maxCostUsd: "0.01" },
@@ -124,7 +118,7 @@ describe("search runtime", () => {
   });
 
   test("does not report a paid empty response as a successful search", async () => {
-    const fetch = vi.fn<(...args: any[]) => any>().mockResolvedValue({
+    const fetch = vi.fn().mockResolvedValue({
       status: 200,
       bodyBase64: Buffer.from('{"results":[]}').toString("base64"),
       paidUsd: "0.00",
@@ -134,10 +128,8 @@ describe("search runtime", () => {
     });
     const execute = createSearchExecutor(
       {
-        balance: vi.fn<(...args: any[]) => any>().mockResolvedValue({}),
-        search: vi
-          .fn<(...args: any[]) => any>()
-          .mockResolvedValue({ results: [operation("parallel", "0.01")] }),
+        balance: vi.fn().mockResolvedValue({}),
+        search: vi.fn().mockResolvedValue({ results: [operation("parallel", "0.01")] }),
         fetch,
       },
       { provider: "parallel", maxCostUsd: "0.01" },

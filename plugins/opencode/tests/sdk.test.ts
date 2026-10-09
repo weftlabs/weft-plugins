@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
-const { fetchMock } = vi.hoisted(() => ({ fetchMock: vi.fn<(...args: any[]) => any>() }));
+const { fetchMock } = vi.hoisted(() => ({ fetchMock: vi.fn() }));
 
 vi.mock("@weftlabs/sdk", () => ({
   WeftClient: class {

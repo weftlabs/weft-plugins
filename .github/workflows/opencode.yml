@@ -65,7 +65,7 @@ jobs:
           pnpm pack --pack-destination release-artifact
       - name: Store release candidate
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: npm-package-${{ github.sha }}
           path: plugins/opencode/release-artifact/*.tgz

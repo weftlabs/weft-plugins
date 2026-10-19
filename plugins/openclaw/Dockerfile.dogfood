@@ -1,19 +1,22 @@
 FROM node:24.21.0-bookworm-slim
 
-RUN npm install --global pnpm@10.33.4
+RUN npm install --global pnpm@10.33.4 --fetch-timeout=60000 --fetch-retries=0
 
 WORKDIR /plugin
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile --fetch-timeout 60000 --fetch-retries 0
 
 COPY README.md LICENSE SKILLS_REF openclaw.plugin.json tsconfig.json ./
 COPY agent-plugin ./agent-plugin
-COPY scripts/check-openclaw.mjs scripts/dogfood.mjs ./scripts/
+COPY scripts/check-openclaw.mjs scripts/check-package.mjs scripts/dogfood.mjs ./scripts/
+COPY docs ./docs
 COPY src ./src
-RUN pnpm run build
+RUN npm_config_fetch_timeout=60000 npm_config_fetch_retries=0 pnpm exec openclaw --version
+RUN pnpm exec node scripts/check-openclaw.mjs --prepare /plugin-runtime
 
 ENV OPENCLAW_STATE_DIR=/tmp/openclaw-dogfood
+ENV WEFT_DOGFOOD_RUNTIME=/plugin-runtime
 
 USER node
 

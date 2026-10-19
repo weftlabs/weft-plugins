@@ -18,6 +18,7 @@ import {
   prepareLinkedRuntime,
   runOpenclaw,
   sanitizeDiagnostics,
+  validatePreparedRuntime,
 } from "../scripts/check-openclaw.mjs";
 
 vi.mock("node:child_process", () => ({ execFileSync: vi.fn() }));
@@ -271,5 +272,43 @@ describe("prepared local-link runtime", () => {
     expect(readme).not.toContain("plugins install --link .");
     expect(readme).toContain("Keep that directory while OpenClaw links to it");
     expect(readme).toContain("not npm/ClawHub publication");
+  });
+});
+
+describe("retained prepared runtime validation", () => {
+  test("checks retained payload and pins without pack, writes, or dependency fetches", () => {
+    const root = mkdtempSync(join(tmpdir(), "weft-preparation-test-"));
+    const runtime = join(root, "plugin");
+    preparationFixture(runtime);
+    try {
+      prepareLinkedRuntime(runtime, join(root, "source"));
+      vi.mocked(execFileSync).mockClear();
+      validatePreparedRuntime(runtime, join(root, "source"));
+      expect(execFileSync).not.toHaveBeenCalled();
+    } finally {
+      rmSync(root, { force: true, recursive: true });
+    }
+  });
+
+  test.each([
+    ["package.json", '{"name":"not-weft"}'],
+    ["pnpm-lock.yaml", "changed policy"],
+    ["pnpm-workspace.yaml", "changed policy"],
+    ["dist/index.js", "changed build"],
+    ["src/unexpected.ts", "extra payload"],
+    ["node_modules/typebox/package.json", '{"version":"wrong"}'],
+    ["node_modules/.pnpm/openclaw@2026.10.4", "nested development host"],
+  ])("rejects changed retained %s without deleting caller-owned runtime", (file, content) => {
+    const root = mkdtempSync(join(tmpdir(), "weft-preparation-test-"));
+    const runtime = join(root, "plugin");
+    preparationFixture(runtime);
+    try {
+      prepareLinkedRuntime(runtime, join(root, "source"));
+      writeFileSync(join(runtime, file), content);
+      expect(() => validatePreparedRuntime(runtime, join(root, "source"))).toThrow();
+      expect(existsSync(runtime)).toBe(true);
+    } finally {
+      rmSync(root, { force: true, recursive: true });
+    }
   });
 });

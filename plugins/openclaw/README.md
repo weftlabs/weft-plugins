@@ -222,6 +222,15 @@ The container root filesystem is read-only. OpenClaw state, MCP credentials,
 and caches live in temporary memory filesystems and disappear after the run.
 The lane never prints the buyer key.
 
+The image completes the host's normal first-start package lifecycle, then builds
+and validates `/plugin-runtime` before switching to the nonroot user. Its internal `WEFT_DOGFOOD_RUNTIME` selector retains that read-only prepared
+runtime for both the offline host checks and the later staging native install.
+The selector is not a trust or validation bypass: a missing or changed payload,
+lockfile, policy, dependency pin, or nested development host fails closed. Outside
+the image, `pnpm run dogfood` prepares an owned temporary runtime and removes it
+only after all checks and staging uses finish. Neither path grants official-registry
+provenance.
+
 Staging uses Base Sepolia. A provider that advertises only a Base mainnet
 challenge must be refused before signing. That safe refusal proves the control
 path but is not a successful paid search.

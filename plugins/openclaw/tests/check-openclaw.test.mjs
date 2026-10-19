@@ -43,21 +43,23 @@ describe("check-openclaw diagnostics", () => {
       expect(message).not.toContain(secret);
     }
     expect(sanitizeDiagnostics("x".repeat(20000))).toHaveLength(8192);
+    expect(sanitizeDiagnostics("?code=oauth-code&state=oauth-state")).toBe(
+      "?code=[REDACTED]&state=[REDACTED]",
+    );
   });
 
-  test("bounds stalled CLI operations and captured output, retaining successful JSON", () => {
+  test("bounds captured output without imposing a total workload deadline", () => {
     vi.mocked(execFileSync).mockReturnValueOnce('{"loaded":true}');
     expect(runOpenclaw(["plugins", "inspect"], {})).toBe('{"loaded":true}');
     expect(execFileSync).toHaveBeenLastCalledWith(
       "openclaw",
       ["plugins", "inspect"],
       expect.objectContaining({
-        timeout: 60000,
-        killSignal: "SIGKILL",
         maxBuffer: 1024 * 1024,
         stdio: ["ignore", "pipe", "pipe"],
       }),
     );
+    expect(execFileSync.mock.calls.at(-1)[2]).not.toHaveProperty("timeout");
   });
 
   test("uses temporary home and config without inherited credentials", () => {
@@ -69,6 +71,8 @@ describe("check-openclaw diagnostics", () => {
       expect(isolated.environment.OPENCLAW_CONFIG_PATH).toBe(`${isolated.root}/config.json`);
       expect(isolated.environment.XDG_CONFIG_HOME).toBe(`${isolated.root}/config`);
       expect(isolated.environment.WEFT_API_KEY).toBeUndefined();
+      expect(isolated.environment.npm_config_fetch_timeout).toBe("60000");
+      expect(isolated.environment.npm_config_fetch_retries).toBe("0");
       expect(Object.keys(isolated.environment).sort()).toEqual(
         [
           "PATH",
@@ -77,6 +81,8 @@ describe("check-openclaw diagnostics", () => {
           "OPENCLAW_STATE_DIR",
           "XDG_CACHE_HOME",
           "XDG_CONFIG_HOME",
+          "npm_config_fetch_timeout",
+          "npm_config_fetch_retries",
         ].sort(),
       );
     } finally {

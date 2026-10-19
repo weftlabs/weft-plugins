@@ -18,6 +18,8 @@ export function isolatedEnvironment(prefix) {
       XDG_CONFIG_HOME: join(root, "config"),
       OPENCLAW_CONFIG_PATH: join(root, "config.json"),
       OPENCLAW_STATE_DIR: state,
+      npm_config_fetch_timeout: "60000",
+      npm_config_fetch_retries: "0",
       XDG_CACHE_HOME: cache,
     },
   };
@@ -26,6 +28,7 @@ export function isolatedEnvironment(prefix) {
 export function sanitizeDiagnostics(value) {
   return String(value ?? "")
     .replace(/https?:\/\/[^\s<>"']+/gi, "[REDACTED_URL]")
+    .replace(/([?&][\w.-]+=)[^&\s"'<>]+/g, "$1[REDACTED]")
     .replace(/Bearer\s+[^\s"']+/gi, "Bearer [REDACTED]")
     .replace(
       /((?:[\w-]*(?:token|secret|password|credential|api[_-]?key)[\w-]*)["']?\s*[:=]\s*["']?)[^\s,"'}]+/gi,
@@ -40,8 +43,6 @@ export function runOpenclaw(args, environment) {
       encoding: "utf8",
       env: environment,
       stdio: ["ignore", "pipe", "pipe"],
-      timeout: 60_000,
-      killSignal: "SIGKILL",
       maxBuffer: 1024 * 1024,
     });
   } catch (error) {

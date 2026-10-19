@@ -75,6 +75,10 @@ requester identity and web-search provider registration.
   selects provider `weft`; generic Weft does not depend on it.
 - The web-search adapter preserves its strict ceiling, attribution,
   cancellation, URL/header validation, and no-paid-retry controls.
+- Host checks use temporary home, config, state, and cache directories without
+  inherited credentials. Failed commands report bounded, redacted diagnostics.
+  Dependency network fetches have a 60-second attempt limit and no retry; build
+  and host-check workloads have no total deadline.
 - The package contains the portable bundle, native manifest, skill pin, source,
   built runtime, documentation, and license.
 - Docker dogfood proves native load, portable-bundle load, the generic MCP tool

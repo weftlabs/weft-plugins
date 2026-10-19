@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "@opencode-ai/plugin": "0.0.0-beta-18743",
-    "@weftlabs/sdk": "0.30.0"
+    "@weftlabs/sdk": "0.32.1"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.15",

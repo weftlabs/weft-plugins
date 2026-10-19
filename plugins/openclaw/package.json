@@ -41,11 +41,11 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.15",
-    "@types/node": "^24.19.1",
-    "openclaw": "2026.8.1",
+    "@types/node": "^24.19.2",
+    "openclaw": "2026.10.4",
     "tsup": "^8.5.1",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.11"
+    "vitest": "^4.1.12"
   },
   "engines": {
     "node": ">=24.15 <25"

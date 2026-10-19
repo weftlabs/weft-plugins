@@ -58,7 +58,14 @@ requester identity and web-search provider registration.
 - OpenClaw installs `agent-plugin/` as an Agent Plugins bundle and discovers
   its canonical skill and hosted MCP server.
 - The native plugin declares the same skill root and MCP server without copying
-  the generic Weft runtime.
+  the generic Weft runtime. Source installs and host acceptance share the same
+  preparation: build and pack current source, validate shipped contents, then
+  install the frozen production closure with unchanged lockfile and workspace
+  policy in a separate runtime directory. The existing local `--link` install
+  uses that directory, not the development checkout with its nested test host.
+  The running host supplies the public SDK; no extra OpenClaw host is installed.
+  This proves local-development loading, not official-registry trust. User source
+  installs retain the prepared directory while linked; host checks remove it.
 - The vendored skill is byte-identical to the canonical repository at the
   pinned `SKILLS_REF`. `pnpm run bundle:check` compares every file in
   `agent-plugin/skills/weft` with `skills/weft` at that commit and rejects

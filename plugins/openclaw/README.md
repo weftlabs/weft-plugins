@@ -46,12 +46,33 @@ openclaw plugins install npm:@weft-labs/openclaw-plugin
 openclaw gateway restart
 ```
 
-For a source checkout:
+For a source checkout, use the pinned development tools and host from this
+package directory (`plugins/openclaw`). Complete the [source tool setup](../../README.md#development)
+first. Review the local package and its capabilities before acknowledging the
+existing install warnings:
 
 ```sh
-openclaw plugins install --link .
-openclaw gateway restart
+mise exec -- pnpm install --frozen-lockfile
+WEFT_RUNTIME="$HOME/.local/share/weft-openclaw-runtime"
+mkdir -p "$(dirname "$WEFT_RUNTIME")"
+mise exec -- pnpm exec node scripts/check-openclaw.mjs --prepare "$WEFT_RUNTIME"
+mise exec -- pnpm exec openclaw plugins install --link "$WEFT_RUNTIME" --force --accept-capabilities --acknowledge-install-policy-warning
+mise exec -- pnpm exec openclaw gateway restart
 ```
+
+The destination must not exist. Preparation builds and packs the current source,
+checks the package contents, and installs only the frozen production dependency
+closure with the unchanged lockfile and workspace policy. Its home, config, cache,
+and dependency store are private temporary directories; the prepared runtime is
+retained. Keep that directory while OpenClaw links to it. For an update, prepare a
+new directory and link to it before removing the old directory.
+
+Do not link the development checkout itself. With the pinned OpenClaw `2026.10.4`,
+its nested development host plugins conflict with package ownership checks. The
+prepared directory contains no extra OpenClaw host; the running host supplies the
+public plugin SDK. This is a local-development install, not npm/ClawHub publication
+or official-registry trust. The existing warning acknowledgements do not change
+that trust boundary.
 
 Check the installation:
 

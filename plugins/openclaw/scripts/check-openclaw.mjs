@@ -1,8 +1,13 @@
 import { execFileSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, rmSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { copyFileSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { pathToFileURL } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
+
+import { validatePackageContents } from "./check-package.mjs";
+
+const sourceRoot = fileURLToPath(new URL("../", import.meta.url));
 
 export function isolatedEnvironment(prefix) {
   const root = mkdtempSync(join(tmpdir(), prefix));
@@ -37,9 +42,10 @@ export function sanitizeDiagnostics(value) {
     .slice(-8192);
 }
 
-export function runOpenclaw(args, environment) {
+function runCommand(command, args, environment, cwd = sourceRoot) {
   try {
-    return execFileSync("openclaw", args, {
+    return execFileSync(command, args, {
+      cwd,
       encoding: "utf8",
       env: environment,
       stdio: ["ignore", "pipe", "pipe"],
@@ -48,10 +54,103 @@ export function runOpenclaw(args, environment) {
   } catch (error) {
     // Do not propagate the raw child error: it includes unredacted output and arguments.
     throw new Error(
-      `OpenClaw ${args.slice(0, 2).join(" ")} failed ` +
+      `${command === "openclaw" ? "OpenClaw" : command} ${args.slice(0, 2).join(" ")} failed ` +
         `(status=${error.status ?? "none"}, signal=${error.signal ?? "none"}, code=${error.code ?? "none"}).\n` +
         sanitizeDiagnostics(`${error.stdout ?? ""}\n${error.stderr ?? ""}`),
     );
+  }
+}
+
+export function runOpenclaw(args, environment) {
+  return runCommand("openclaw", args, environment);
+}
+
+const hashFile = (path) => createHash("sha256").update(readFileSync(path)).digest("hex");
+const readJson = (path) => JSON.parse(readFileSync(path, "utf8"));
+
+export function prepareLinkedRuntime(destination, sourceDirectory = sourceRoot) {
+  const runtime = resolve(destination);
+  // Refuse an existing path before taking ownership; never remove another install.
+  mkdirSync(runtime);
+  let preparation;
+  try {
+    preparation = isolatedEnvironment("weft-openclaw-preparation-");
+    const { root, environment } = preparation;
+    // pack runs the real prepack build, so the runtime cannot use stale dist files.
+    runCommand("pnpm", ["pack", "--pack-destination", root], environment, sourceDirectory);
+    const archive = join(root, "weft-labs-openclaw-plugin-0.1.0.tgz");
+    const files = validatePackageContents(runCommand("tar", ["-tzf", archive], environment));
+    for (const file of files) {
+      if (!file.startsWith("package/") || file.split("/").some((part) => part === "..")) {
+        throw new Error("Packed plugin contains an invalid path");
+      }
+    }
+    runCommand("tar", ["-xzf", archive, "--strip-components=1", "-C", runtime], environment);
+    const payloadHashes = new Map();
+    for (const file of files) {
+      const relative = file.slice("package/".length);
+      const digest = hashFile(join(runtime, relative));
+      payloadHashes.set(relative, digest);
+      if (relative !== "package.json" && digest !== hashFile(join(sourceDirectory, relative))) {
+        throw new Error(`Packed payload differs from current source/build: ${relative}`);
+      }
+    }
+    const sourceManifest = readJson(join(sourceDirectory, "package.json"));
+    const packedManifest = readJson(join(runtime, "package.json"));
+    for (const field of ["name", "version", "dependencies", "peerDependencies", "openclaw"]) {
+      if (JSON.stringify(sourceManifest[field]) !== JSON.stringify(packedManifest[field])) {
+        throw new Error(`Packed manifest changed ${field}`);
+      }
+    }
+    for (const name of ["pnpm-lock.yaml", "pnpm-workspace.yaml"]) {
+      copyFileSync(join(sourceDirectory, name), join(runtime, name));
+    }
+    runCommand(
+      "pnpm",
+      [
+        "install",
+        "--prod",
+        "--frozen-lockfile",
+        "--store-dir",
+        join(root, "store"),
+        "--fetch-timeout",
+        "60000",
+        "--fetch-retries",
+        "0",
+      ],
+      environment,
+      runtime,
+    );
+    for (const name of ["pnpm-lock.yaml", "pnpm-workspace.yaml"]) {
+      if (hashFile(join(runtime, name)) !== hashFile(join(sourceDirectory, name))) {
+        throw new Error(`Production preparation changed ${name}`);
+      }
+    }
+    for (const [relative, digest] of payloadHashes) {
+      if (hashFile(join(runtime, relative)) !== digest) {
+        throw new Error(`Production preparation changed packed payload: ${relative}`);
+      }
+    }
+    const modules = join(runtime, "node_modules");
+    if (
+      readdirSync(modules).includes("openclaw") ||
+      readdirSync(join(modules, ".pnpm")).some((name) => name.startsWith("openclaw@"))
+    ) {
+      throw new Error("Production runtime must not contain the development OpenClaw host");
+    }
+    for (const [name, version] of Object.entries(sourceManifest.dependencies)) {
+      if (readJson(join(modules, name, "package.json")).version !== version) {
+        throw new Error(`Production dependency does not match its exact pin: ${name}`);
+      }
+    }
+    const sha256 = hashFile(archive);
+    console.log(`Prepared local-link runtime ${runtime}; package SHA256: ${sha256}`);
+    return runtime;
+  } catch (error) {
+    rmSync(runtime, { force: true, recursive: true });
+    throw error;
+  } finally {
+    if (preparation) rmSync(preparation.root, { force: true, recursive: true });
   }
 }
 
@@ -99,50 +198,62 @@ function installAndInspect(path, prefix, configureOauth = false) {
   }
 }
 
-function checkOpenclaw() {
-  const nativeResult = installAndInspect(".", "weft-openclaw-native-", true);
-  const native = nativeResult.inspection;
-  const nativeServer = nativeResult.mcpStatus.servers?.find((server) => server.name === "weft");
-  const nativeAuth = nativeServer?.auth;
-  if (
-    native.plugin?.status !== "loaded" ||
-    native.plugin?.format !== "openclaw" ||
-    !native.plugin?.webSearchProviderIds?.includes("weft") ||
-    !native.mcpServers?.some((server) => server.name === "weft") ||
-    (nativeAuth !== "oauth" && nativeAuth?.type !== "oauth") ||
-    native.plugin?.diagnostics?.length > 0 ||
-    native.diagnostics?.length > 0
-  ) {
-    throw new Error(
-      `OpenClaw did not load the full Weft plugin with saved OAuth: ${sanitizeDiagnostics(JSON.stringify(nativeResult))}`,
-    );
-  }
+export function checkOpenclaw() {
+  const preparedRoot = mkdtempSync(join(tmpdir(), "weft-openclaw-runtime-"));
+  try {
+    const runtime = prepareLinkedRuntime(join(preparedRoot, "plugin"));
+    const nativeResult = installAndInspect(runtime, "weft-openclaw-native-", true);
+    const native = nativeResult.inspection;
+    const nativeServer = nativeResult.mcpStatus.servers?.find((server) => server.name === "weft");
+    const nativeAuth = nativeServer?.auth;
+    if (
+      native.plugin?.status !== "loaded" ||
+      native.plugin?.format !== "openclaw" ||
+      !native.plugin?.webSearchProviderIds?.includes("weft") ||
+      !native.mcpServers?.some((server) => server.name === "weft") ||
+      (nativeAuth !== "oauth" && nativeAuth?.type !== "oauth") ||
+      native.plugin?.diagnostics?.length > 0 ||
+      native.diagnostics?.length > 0
+    ) {
+      throw new Error(
+        `OpenClaw did not load the full Weft plugin with saved OAuth: ${sanitizeDiagnostics(JSON.stringify(nativeResult))}`,
+      );
+    }
 
-  const bundleResult = installAndInspect("./agent-plugin", "weft-openclaw-bundle-", true);
-  const bundle = bundleResult.inspection;
-  const bundleServer = bundleResult.mcpStatus.servers?.find((server) => server.name === "weft");
-  const bundleAuth = bundleServer?.auth;
-  if (
-    bundle.plugin?.status !== "loaded" ||
-    bundle.plugin?.format !== "bundle" ||
-    bundle.plugin?.bundleFormat !== "agent" ||
-    !bundle.plugin?.bundleCapabilities?.includes("skills") ||
-    !bundle.plugin?.bundleCapabilities?.includes("mcpServers") ||
-    !bundle.mcpServers?.some((server) => server.name === "weft") ||
-    (bundleAuth !== "oauth" && bundleAuth?.type !== "oauth") ||
-    bundle.plugin?.diagnostics?.length > 0 ||
-    bundle.diagnostics?.length > 0
-  ) {
-    throw new Error(
-      `OpenClaw did not load the portable Weft bundle with OAuth: ${sanitizeDiagnostics(JSON.stringify(bundleResult))}`,
-    );
-  }
+    const bundleResult = installAndInspect("./agent-plugin", "weft-openclaw-bundle-", true);
+    const bundle = bundleResult.inspection;
+    const bundleServer = bundleResult.mcpStatus.servers?.find((server) => server.name === "weft");
+    const bundleAuth = bundleServer?.auth;
+    if (
+      bundle.plugin?.status !== "loaded" ||
+      bundle.plugin?.format !== "bundle" ||
+      bundle.plugin?.bundleFormat !== "agent" ||
+      !bundle.plugin?.bundleCapabilities?.includes("skills") ||
+      !bundle.plugin?.bundleCapabilities?.includes("mcpServers") ||
+      !bundle.mcpServers?.some((server) => server.name === "weft") ||
+      (bundleAuth !== "oauth" && bundleAuth?.type !== "oauth") ||
+      bundle.plugin?.diagnostics?.length > 0 ||
+      bundle.diagnostics?.length > 0
+    ) {
+      throw new Error(
+        `OpenClaw did not load the portable Weft bundle with OAuth: ${sanitizeDiagnostics(JSON.stringify(bundleResult))}`,
+      );
+    }
 
-  console.log(
-    "OpenClaw loaded the generic Weft skill and MCP bundle, requester-capable native plugin, and optional web-search provider without diagnostics.",
-  );
+    console.log(
+      "OpenClaw loaded the generic Weft skill and MCP bundle, requester-capable native plugin, and optional web-search provider without diagnostics.",
+    );
+  } finally {
+    rmSync(preparedRoot, { force: true, recursive: true });
+  }
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
-  checkOpenclaw();
+  if (process.argv[2] === "--prepare" && process.argv.length === 4) {
+    prepareLinkedRuntime(process.argv[3]);
+  } else if (process.argv.length === 2) {
+    checkOpenclaw();
+  } else {
+    throw new Error("Usage: check-openclaw.mjs [--prepare <new-runtime-directory>]");
+  }
 }

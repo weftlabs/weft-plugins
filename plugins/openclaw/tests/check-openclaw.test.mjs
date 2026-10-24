@@ -160,10 +160,8 @@ function preparationFixture(runtime, fault) {
       if (fault === "stale") writeFileSync(join(runtime, "dist/index.js"), "stale build");
     } else if (command === "pnpm" && args[0] === "install") {
       mkdirSync(join(runtime, "node_modules/.pnpm"), { recursive: true });
-      for (const [name, version] of [
-        ["@weft-labs/sdk", "0.25.0"],
-        ["typebox", "1.4.0"],
-      ]) {
+      const manifest = JSON.parse(readFileSync(join(source, "package.json"), "utf8"));
+      for (const [name, version] of Object.entries(manifest.dependencies)) {
         const path = join(runtime, "node_modules", name);
         mkdirSync(path, { recursive: true });
         writeFileSync(

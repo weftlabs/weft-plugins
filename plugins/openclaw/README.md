@@ -16,15 +16,14 @@ provider through Weft.
 
 ## What installs
 
-| Layer | Default | Purpose |
-| --- | --- | --- |
-| Canonical `weft` skill | Yes | Teaches the agent service selection, payment, receipt, and safety loop. |
-| Hosted Weft MCP | Yes | Supplies generic discovery, wallet, execution, and connection tools. |
+| Layer                       | Default         | Purpose                                                                 |
+| --------------------------- | --------------- | ----------------------------------------------------------------------- |
+| Canonical `weft` skill      | Yes             | Teaches the agent service selection, payment, receipt, and safety loop. |
+| Hosted Weft MCP             | Yes             | Supplies generic discovery, wallet, execution, and connection tools.    |
 | Requester identity resolver | When configured | Gives different trusted OpenClaw requesters different Weft credentials. |
-| Native web-search adapter | When selected | Routes OpenClaw `web_search` through one Weft-bought search operation. |
+| Native web-search adapter   | When selected   | Routes OpenClaw `web_search` through one Weft-bought search operation.  |
 
 OpenClaw prefixes MCP tools with their server name. The Weft tools appear as:
-
 - `weft__weft_search`
 - `weft__weft_fetch`
 - `weft__weft_balance`
@@ -95,7 +94,6 @@ openclaw mcp probe weft
 
 Complete the browser sign-in, then start a new OpenClaw session. Ask for a
 service, not only a web page. Examples:
-
 - “Find an API that verifies this email address. Show the price before use.”
 - “Find a company-data service and enrich these five domains.”
 - “Find a service that can send this SMS. Do not execute until I confirm.”

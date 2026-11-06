@@ -21,7 +21,6 @@ The repository ships three layers. Each layer has one owner.
 ### 1. Portable Agent Plugin bundle
 
 `agent-plugin/` is a conforming Agent Plugins 1.0.0 bundle. It contains:
-
 - the canonical `weft` skill, vendored byte-identical from
   `weftlabs/skills` at `SKILLS_REF`. `bundle:check` compares that full
   directory with the pinned commit and rejects drift;
@@ -38,7 +37,6 @@ OpenClaw login command reads the saved local server list.
 
 The root OpenClaw plugin reuses the same vendored skill and declares the same
 hosted MCP server. Native code adds only OpenClaw-specific behavior:
-
 - optional requester-scoped MCP credentials for multi-user gateways;
 - an optional native `web_search` provider.
 
@@ -56,7 +54,6 @@ for one capability class. The generic MCP tools remain available independently.
 ## Generic MCP contract
 
 The hosted server exposes these conceptual tools:
-
 - `weft_search` — free discovery of data, APIs, agents, MCP tools, and actions;
 - `weft_fetch` — paid execution with a caller-supplied price ceiling;
 - `weft_balance` — read-only wallet and policy state;
@@ -74,14 +71,12 @@ is stored in the plugin package.
 
 Multi-user gateways can configure exact requester bindings. Each binding uses
 only host-trusted fields:
-
 - `requesterSenderId`;
 - `messageChannel`;
 - optional `agentAccountId`;
 - the name of an environment variable that contains the Weft credential.
 
 When bindings exist, the native resolver is fail-closed:
-
 - it returns a connection only for one exact matching binding;
 - it does not invent requester identity;
 - it does not fall back to a shared credential;
@@ -98,7 +93,6 @@ vendored skill requires a balance check, a tight `max_cost_usd`, no automatic
 paid retry, and explicit confirmation for unclear side effects.
 
 The optional web-search adapter keeps its additional controls:
-
 - reviewed synchronous search operations only;
 - HTTPS provider URLs;
 - exact Weft attribution;
@@ -110,7 +104,6 @@ The optional web-search adapter keeps its additional controls:
 
 The public package is `@weft-labs/openclaw-plugin` in
 `weftlabs/weft-openclaw-plugin`.
-
 - Install the repository root for all three layers.
 - Install `agent-plugin/` when only the portable skill and MCP bundle are
   allowed.

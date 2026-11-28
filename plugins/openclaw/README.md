@@ -24,6 +24,7 @@ provider through Weft.
 | Native web-search adapter   | When selected   | Routes OpenClaw `web_search` through one Weft-bought search operation.  |
 
 OpenClaw prefixes MCP tools with their server name. The Weft tools appear as:
+
 - `weft__weft_search`
 - `weft__weft_fetch`
 - `weft__weft_balance`
@@ -66,8 +67,8 @@ and dependency store are private temporary directories; the prepared runtime is
 retained. Keep that directory while OpenClaw links to it. For an update, prepare a
 new directory and link to it before removing the old directory.
 
-Do not link the development checkout itself. With the pinned OpenClaw `2026.10.4`,
-its nested development host plugins conflict with package ownership checks. The
+Do not link the development checkout itself. OpenClaw `2026.10.4` rejected that layout
+because its nested development host plugins conflicted with package ownership checks. The
 prepared directory contains no extra OpenClaw host; the running host supplies the
 public plugin SDK. This is a local-development install, not npm/ClawHub publication
 or official-registry trust. The existing warning acknowledgements do not change
@@ -94,6 +95,7 @@ openclaw mcp probe weft
 
 Complete the browser sign-in, then start a new OpenClaw session. Ask for a
 service, not only a web page. Examples:
+
 - “Find an API that verifies this email address. Show the price before use.”
 - “Find a company-data service and enrich these five domains.”
 - “Find a service that can send this SMS. Do not execute until I confirm.”
